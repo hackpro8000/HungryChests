@@ -1,0 +1,34 @@
+{
+    "name": "HotLogistics",
+    "emitLegacyScripts": false,
+    "tree": {
+        "$className": "DataModel",
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "GameClient": {
+                "$path": "GameClient"
+            },
+            "Packages": {
+                "$path": "Packages"
+            },
+            "GameCommons": {
+                "$path": "GameCommons"
+            },
+            "TLib": {
+                "$path": "TLib"
+            }
+        },
+        "ServerScriptService": {
+            "$className": "ServerScriptService",
+            "GameServer": {
+                "$path": "GameServer"
+            },
+            "Packages": {
+                "$path": "ServerPackages"
+            }
+        }
+    },
+    "servePlaceIds": [
+        71165933671730
+    ]
+}
