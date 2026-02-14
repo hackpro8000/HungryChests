@@ -18,5 +18,5 @@ BootEvents.SystemStarting:Fire(); do
 end; BootEvents.SystemStarted:FireDeferred()
 
 BootEvents.NetworkStarting:Fire(); do
-    DataLib.Networking:Start()    
+    DataLib.Networking:Start()
 end; BootEvents.NetworkStarted:FireDeferred()

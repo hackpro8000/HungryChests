@@ -1,5 +1,5 @@
 {
-    "name": "HotLogistics",
+    "name": "HungryChests",
     "emitLegacyScripts": false,
     "tree": {
         "$className": "DataModel",
@@ -7,7 +7,7 @@
             "$className": "ReplicatedStorage",
             "GameClient": {
                 "$path": "GameClient"
-            },
+            },            
             "Packages": {
                 "$path": "Packages"
             },
@@ -32,6 +32,6 @@
         }
     },
     "servePlaceIds": [
-        71165933671730
+        101290979090480
     ]
 }

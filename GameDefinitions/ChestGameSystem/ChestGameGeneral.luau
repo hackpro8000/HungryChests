@@ -1,0 +1,6 @@
+return {
+    GRID_SIZE_X = 5,
+    GRID_SIZE_Y = 5,
+    MAX_CHEST_CHOICE = 3,
+    TURN_TIMER = 10,
+}
