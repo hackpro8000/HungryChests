@@ -7,6 +7,30 @@ local Actions, Data = {}, {
     ChestGameCollection = {} :: {ChestGameDataTypes.ChestGame}
 }
 
+Actions.setAnimationPeriod = DataLib.Action(function(chestGameID : string, currentTime : number, animationPeriod : number)
+    assert(chestGameID, "Chest game ID was not provided!")
+    assert(currentTime, "Current time was not provided!")
+    assert(animationPeriod, "Animation period was not provided!")
+
+    local chestGame : ChestGameDataTypes.ChestGame = assert(
+        Data.ChestGameCollection[chestGameID],
+        `Chest game {chestGameID} not found!`
+    )
+
+    chestGame.AnimationEnds = currentTime + animationPeriod
+end)
+
+Actions.clearAnimationPeriod = DataLib.Action(function(chestGameID : string)
+    assert(chestGameID, "Chest game ID was not provided!")
+
+    local chestGame : ChestGameDataTypes.ChestGame = assert(
+        Data.ChestGameCollection[chestGameID],
+        `Chest game {chestGameID} not found!`
+    )
+
+    chestGame.AnimationEnds = nil
+end)
+
 Actions.createChestGame = DataLib.Action(function(chestGameID : string, chestGame : ChestGameDataTypes.ChestGame)
     assert(chestGameID, "Chest game ID was not provided!")
     assert(chestGame, "Chest game was not provided!")
@@ -52,10 +76,10 @@ Actions.stopTimer = DataLib.Action(function(chestGameID : string)
     chestGame.TimerMax = nil
 end)
 
-Actions.chooseChest = DataLib.Action(function(chestGameID : string, participantID : string, chestNumber : number)
+Actions.chooseChest = DataLib.Action(function(chestGameID : string, participantID : string, chestNum : number)
     assert(chestGameID, "Chest game ID was not provided!")
     assert(participantID, "Participant ID was not provided!")
-    assert(chestNumber, "Chest number was not provided!")
+    assert(chestNum, "Chest number was not provided!")
 
     local chestGame : ChestGameDataTypes.ChestGame = assert(
         Data.ChestGameCollection[chestGameID],
@@ -67,15 +91,15 @@ Actions.chooseChest = DataLib.Action(function(chestGameID : string, participantI
         `Participant {participantID} not found in chest game {chestGameID}!`
     )
 
-    assert(table.find(participant.ChosenChests, chestNumber) == nil, `Participant {participantID} already chose chest in chest game {chestGameID}`)
+    assert(table.find(participant.ChosenChests, chestNum) == nil, `Participant {participantID} already chose chest in chest game {chestGameID}`)
 
-    table.insert(participant.ChosenChests, chestNumber)
+    table.insert(participant.ChosenChests, chestNum)
 end)
 
-Actions.unchooseChest = DataLib.Action(function(chestGameID : string, participantID : string, chestNumber : number)
+Actions.unchooseChest = DataLib.Action(function(chestGameID : string, participantID : string, chestNum : number)
     assert(chestGameID, "Chest game ID was not provided!")
     assert(participantID, "Participant ID was not provided!")
-    assert(chestNumber, "Chest number was not provided!")
+    assert(chestNum, "Chest number was not provided!")
 
     local chestGame : ChestGameDataTypes.ChestGame = assert(
         Data.ChestGameCollection[chestGameID],
@@ -87,7 +111,7 @@ Actions.unchooseChest = DataLib.Action(function(chestGameID : string, participan
         `Participant {participantID} not found in chest game {chestGameID}!`
     )
 
-    table.remove(participant.ChosenChests, table.find(participant.ChosenChests, chestNumber))
+    table.remove(participant.ChosenChests, table.find(participant.ChosenChests, chestNum))
 end)
 
 Actions.addParticipant = DataLib.Action(function(chestGameID : string, participantID : string, participant : ChestGameDataTypes.ChestGameParticipant)
@@ -140,10 +164,28 @@ Actions.setParticipantIndex = DataLib.Action(function(chestGameID : string, part
     participant.Index = index
 end)
 
-Actions.openChest = DataLib.Action(function(chestGameID : string, participantID : string, chestNumber : number)
+Actions.setParticipantMaxBadChests = DataLib.Action(function(chestGameID : string, participantID : string, maxBadChests : number)
     assert(chestGameID, "Chest game ID was not provided!")
     assert(participantID, "Participant ID was not provided!")
-    assert(chestNumber, "Chest number was not provided!")
+    assert(maxBadChests, "Max bad chests was not provided!")
+
+    local chestGame : ChestGameDataTypes.ChestGame = assert(
+        Data.ChestGameCollection[chestGameID],
+        `Chest game {chestGameID} not found!`
+    )
+
+    local participant : ChestGameDataTypes.ChestGameParticipant = assert(
+        chestGame.Participants[participantID], 
+        `Participant {participantID} not found in chest game {chestGameID}!`
+    )
+    
+    participant.MaxBadChests = maxBadChests
+end)
+
+Actions.openChest = DataLib.Action(function(chestGameID : string, participantID : string, chestNum : number)
+    assert(chestGameID, "Chest game ID was not provided!")
+    assert(participantID, "Participant ID was not provided!")
+    assert(chestNum, "Chest number was not provided!")
 
     local chestGame : ChestGameDataTypes.ChestGame = assert(
         Data.ChestGameCollection[chestGameID],
@@ -155,9 +197,19 @@ Actions.openChest = DataLib.Action(function(chestGameID : string, participantID 
         `Participant {participantID} not found in chest game {chestGameID}!`
     )
 
-    assert(table.find(chestGame.OpenedChests, chestNumber) == nil, `Chest {chestNumber} already opened in chest game {chestGameID}`)
+    assert(table.find(chestGame.OpenedChests, chestNum) == nil, `Chest {chestNum} already opened in chest game {chestGameID}`)
 
-    table.insert(chestGame.OpenedChests, chestNumber)
+    table.insert(chestGame.OpenedChests, chestNum)
+end)
+
+Actions.openBadChest = DataLib.Action(function(chestGameID : string, participantID : string, chestNum : number)
+    -- Encapsulator action that calls openChest for bad chest context
+    Actions.openChest(chestGameID, participantID, chestNum)
+end)
+
+Actions.openSafeChest = DataLib.Action(function(chestGameID : string, participantID : string, chestNum : number)
+    -- Encapsulator action that calls openChest for safe chest context
+    Actions.openChest(chestGameID, participantID, chestNum)
 end)
 
 Actions.setCurrentTurnParticipant = DataLib.Action(function(chestGameID : string, participantID : string?)
@@ -247,6 +299,9 @@ Actions.resetGame = DataLib.Action(function(chestGameID : string)
     -- Reset timer
     chestGame.TimerMin = nil
     chestGame.TimerMax = nil
+    
+    -- Reset animation period
+    chestGame.AnimationEnds = nil
 end)
 
 return DataLib.StateContainer(Actions, Data)

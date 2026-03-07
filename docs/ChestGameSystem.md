@@ -95,7 +95,8 @@ type ChestGameParticipant = {
     ChosenChests: {number},       -- Selected chest indices
     ChestType: string,            -- Visual chest type
     ChairType: string,            -- Chair type for participant
-    Index: number                 -- Turn order index
+    Index: number,                -- Turn order index
+    MaxBadChests: number          -- Maximum bad chests participant may place
 }
 ```
 
@@ -122,13 +123,13 @@ Transitions the chest game to a new state.
 
 #### chooseChest
 ```lua
-Actions.chooseChest(chestGameID: string, participantID: string, chestNumber: number)
+Actions.chooseChest(chestGameID: string, participantID: string, chestNum: number)
 ```
 Adds a chest to a participant's selection list.
 
 #### unchooseChest
 ```lua
-Actions.unchooseChest(chestGameID: string, participantID: string, chestNumber: number)
+Actions.unchooseChest(chestGameID: string, participantID: string, chestNum: number)
 ```
 Removes a chest from a participant's selection list.
 
@@ -149,6 +150,12 @@ Removes a participant from the game.
 Actions.setParticipantIndex(chestGameID: string, participantID: string, index: number)
 ```
 Assigns turn order index to a participant.
+
+#### setParticipantMaxBadChests
+```lua
+Actions.setParticipantMaxBadChests(chestGameID: string, participantID: string, maxBadChests: number)
+```
+Sets the maximum number of bad chests a participant may place.
 
 #### stopTimer
 ```lua
@@ -176,7 +183,7 @@ Handles timer expiration by delegating to stopTimer action. Called when timer ex
 
 #### openChest
 ```lua
-Actions.openChest(chestGameID: string, participantID: string, chestNumber: number)
+Actions.openChest(chestGameID: string, participantID: string, chestNum: number)
 ```
 Opens a chest for a participant and adds it to the OpenedChests list. Core gameplay action during InAction state.
 
@@ -238,7 +245,7 @@ Returns the number of participants in a game using the game ID instead of the ga
 
 #### isChestOpened
 ```lua
-local isOpened = ChestGameHelper.isChestOpened(chestGameID: string, chestNumber: number)
+local isOpened = ChestGameHelper.isChestOpened(chestGameID: string, chestNum: number)
 ```
 Returns whether a specific chest number has already been opened in the game.
 
@@ -250,7 +257,7 @@ Returns a list of participant IDs for participants who still have health points 
 
 #### isBadChest
 ```lua
-local isBad = ChestGameHelper.isBadChest(chestGameID: string, chestNumber: number, excludeParticipantID: string?)
+local isBad = ChestGameHelper.isBadChest(chestGameID: string, chestNum: number, excludeParticipantID: string?)
 ```
 Returns whether a chest is "bad" (chosen by enemy participants). Optionally exclude a specific participant from the check.
 

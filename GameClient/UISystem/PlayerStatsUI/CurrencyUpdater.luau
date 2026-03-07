@@ -7,6 +7,20 @@ local PlayerStatsViewer = require(script.Parent.PlayerStatsViewer)
 
 local LocalPlayer = Players.LocalPlayer
 
+local function abbreviateNumber(number: number): string
+    if number < 1000 then
+        return tostring(math.floor(number))
+    elseif number < 1000000 then
+        return string.format("%.1fk", math.floor((number / 1000) * 10) / 10)
+    elseif number < 1000000000 then
+        return string.format("%.1fM", math.floor((number / 1000000) * 10) / 10)
+    elseif number < 1000000000000 then
+        return string.format("%.1fB", math.floor((number / 1000000000) * 10) / 10)
+    else
+        return string.format("%.1fT", math.floor((number / 1000000000000) * 10) / 10)
+    end
+end
+
 local function update()
     local profile = ProfileState.Data.Profiles[`{LocalPlayer.UserId}`]
     if profile == nil then
@@ -14,8 +28,7 @@ local function update()
         return
     end
 
-    PlayerStatsViewer:SetLabel("PrimaryCurrencyAmount", `${profile.Currencies.Primary}`)
-    PlayerStatsViewer:SetLabel("TrophyAmount", `{profile.Trophies}`)
+    PlayerStatsViewer:SetLabel("PrimaryCurrencyAmount", `{abbreviateNumber(profile.Currencies.Primary)}`)
 end
 
 BootEvents.NetworkStarted:Connect(function()

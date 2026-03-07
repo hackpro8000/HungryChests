@@ -279,16 +279,16 @@ Configuration values are automatically available to all contexts through the Rep
 
 #### Calculating Grid Positions
 ```lua
-local function getChestPosition(chestNumber: number): Vector3
-    local gridX = ((chestNumber-1) % ChestGameGeneral.GRID_SIZE_X) * 4 - (ChestGameGeneral.GRID_SIZE_X-1) * 2
-    local gridY = math.floor((chestNumber-1) / ChestGameGeneral.GRID_SIZE_X) * 4 - (ChestGameGeneral.GRID_SIZE_Y-1) * 2
+local function getChestPosition(chestNum: number): Vector3
+    local gridX = ((chestNum-1) % ChestGameGeneral.GRID_SIZE_X) * 4 - (ChestGameGeneral.GRID_SIZE_X-1) * 2
+    local gridY = math.floor((chestNum-1) / ChestGameGeneral.GRID_SIZE_X) * 4 - (ChestGameGeneral.GRID_SIZE_Y-1) * 2
     return Vector3.new(gridX, 0, gridY)
 end
 ```
 
 #### Validating Player Choices
 ```lua
-local function validateChestChoice(participant: ChestGameParticipant, newChestNumber: number): boolean
+local function validateChestChoice(participant: ChestGameParticipant, newchestNum: number): boolean
     -- Check maximum choices
     if #participant.ChosenChests >= ChestGameGeneral.MAX_CHEST_CHOICE then
         return false
@@ -296,7 +296,7 @@ local function validateChestChoice(participant: ChestGameParticipant, newChestNu
     
     -- Check if chest already chosen
     for _, existingChest in participant.ChosenChests do
-        if existingChest == newChestNumber then
+        if existingChest == newchestNum then
             return false
         end
     end

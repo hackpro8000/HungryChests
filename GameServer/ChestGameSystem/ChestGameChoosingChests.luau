@@ -1,5 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local ChestGameServer = require(script.Parent.ChestGameServer)
 local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
 local ChestGameHelper = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameHelper)
 local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
@@ -16,50 +17,10 @@ RE_ChooseChest.OnServerEvent:Connect(function(player : Player, chestNum : number
     assert(activeChestGameID, `Couldn't find active chest game for player {player.Name}!`)
     assert(activeParticipantID, `Player {player.Name} is not actively participating in chest game {activeChestGameID}!`)
     
-    local activeParticipant = activeChestGame.Participants[activeParticipantID]
-    local participantCount : number = ChestGameHelper.countParticipantsByID(activeChestGameID)
-    local participantIndex : number = ((chestNum-1) % participantCount) + 1
-
-    assert(#activeParticipant.ChosenChests < activeChestGame.MaxChestChoice, `Cannot choose more than {activeChestGame.MaxChestChoice} chests!`)
-
-    for participantID : string, participant : ChestGameDataTypes.ChestGameParticipant in activeChestGame.Participants do
-        if participantID == activeParticipantID then
-            continue
-        end
-
-        if table.find(participant.ChosenChests, chestNum) then
-            -- Conflict detected - randomize the existing participant's choice
-            local availableChests = ChestGameHelper.getAvailableChests(activeChestGameID)
-            
-            -- Remove the conflicting chest from available choices
-            local conflictFreeChests = {}
-            for _, chestNumber in availableChests do
-                if chestNumber ~= chestNum then
-                    table.insert(conflictFreeChests, chestNumber)
-                end
-            end
-            
-            if #conflictFreeChests >= 1 then
-                -- Randomize the existing participant's choice
-                local newChest = conflictFreeChests[math.random(#conflictFreeChests)]
-                
-                -- Remove existing conflicting choice
-                ChestGameState:GetServer().unchooseChest(activeChestGameID, participantID, chestNum)
-                
-                -- Assign new random choice to existing participant
-                ChestGameState:GetServer().chooseChest(activeChestGameID, participantID, newChest)
-                
-                -- Overwrite chestNum for the current participant's choice
-                table.remove(conflictFreeChests, table.find(conflictFreeChests, newChest))
-                chestNum = conflictFreeChests[math.random(#conflictFreeChests)]
-            end
-        end
-    end
-
-    ChestGameState:GetServer().chooseChest(activeChestGameID, activeParticipantID, chestNum)
+    ChestGameServer.chooseChestRegulated(activeChestGameID, activeParticipantID, chestNum)
 end)
 
-ChestGameState.chooseChest.listen(function(chestGameID: string, participantID: string, chestNumber: number)
+ChestGameState.chooseChest.listen(function(chestGameID: string, participantID: string, chestNum: number)
     local chestGame : ChestGameDataTypes.ChestGame = ChestGameState.Data.ChestGameCollection[chestGameID]
 
     local participantCount : number = ChestGameHelper.countParticipants(chestGame)

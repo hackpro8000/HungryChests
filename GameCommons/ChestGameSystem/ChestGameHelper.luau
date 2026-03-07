@@ -44,7 +44,7 @@ function ChestGameHelper.countParticipantsByID(chestGameID: string): number
     return ChestGameHelper.countParticipants(chestGame)
 end
 
-function ChestGameHelper.getParticipantByIndex(chestGameID: string, index: number): ChestGameDataTypes.ChestGameParticipant?
+function ChestGameHelper.getParticipantByIndex(chestGameID: string, index: number): (string?, ChestGameDataTypes.ChestGameParticipant?)
     assert(chestGameID, "Chest game ID was not provided!")
     assert(index, "Index was not provided!")
     assert(typeof(index) == "number", "Index must be a number!")
@@ -76,32 +76,32 @@ function ChestGameHelper.getAvailableChests(chestGameID: string): {number}
     
     -- Collect all chosen chests from all participants
     for _, participant in chestGame.Participants do
-        for _, chestNumber in participant.ChosenChests do
-            chosenChests[chestNumber] = true
+        for _, chestNum in participant.ChosenChests do
+            chosenChests[chestNum] = true
         end
     end
     
     -- Generate available chests (1 to total chests)
     local totalChests = chestGame.GridSizeX * chestGame.GridSizeY
-    for chestNumber = 1, totalChests do
-        if not chosenChests[chestNumber] then
-            table.insert(availableChests, chestNumber)
+    for chestNum = 1, totalChests do
+        if not chosenChests[chestNum] then
+            table.insert(availableChests, chestNum)
         end
     end
     
     return availableChests
 end
 
-function ChestGameHelper.isChestOpened(chestGameID: string, chestNumber: number): boolean
+function ChestGameHelper.isChestOpened(chestGameID: string, chestNum: number): boolean
     assert(chestGameID, "Chest game ID was not provided!")
-    assert(chestNumber, "Chest number was not provided!")
+    assert(chestNum, "Chest number was not provided!")
     
     local chestGame: ChestGameDataTypes.ChestGame = assert(
         ChestGameState.Data.ChestGameCollection[chestGameID],
         `Chest game {chestGameID} not found!`
     )
     
-    return table.find(chestGame.OpenedChests or {}, chestNumber) ~= nil
+    return table.find(chestGame.OpenedChests or {}, chestNum) ~= nil
 end
 
 function ChestGameHelper.getActiveParticipants(chestGameID: string): {string}
@@ -130,9 +130,32 @@ function ChestGameHelper.getActiveParticipants(chestGameID: string): {string}
     return activeParticipants
 end
 
-function ChestGameHelper.isBadChest(chestGameID: string, chestNumber: number, excludeParticipantID: string?): boolean
+function ChestGameHelper.isChestOwnedByParticipant(chestGameID : string, chestNum : number, participantID : string) : boolean
     assert(chestGameID, "Chest game ID was not provided!")
-    assert(chestNumber, "Chest number was not provided!")
+    assert(chestNum, "Chest number was not provided!")
+    assert(participantID, "Participant ID was not provided")
+
+    local chestGame: ChestGameDataTypes.ChestGame = assert(
+        ChestGameState.Data.ChestGameCollection[chestGameID],
+        `Chest game {chestGameID} not found!`
+    )  
+
+    for participantID1: string, participant: ChestGameDataTypes.ChestGameParticipant in chestGame.Participants do
+        if participantID1 ~= participantID then
+            continue
+        end
+        
+        if table.find(participant.ChosenChests, chestNum) then
+            return true
+        end
+    end
+
+    return false
+end
+
+function ChestGameHelper.isBadChest(chestGameID: string, chestNum: number, excludeParticipantID: string?): boolean
+    assert(chestGameID, "Chest game ID was not provided!")
+    assert(chestNum, "Chest number was not provided!")
     
     local chestGame: ChestGameDataTypes.ChestGame = assert(
         ChestGameState.Data.ChestGameCollection[chestGameID],
@@ -145,7 +168,7 @@ function ChestGameHelper.isBadChest(chestGameID: string, chestNumber: number, ex
             continue
         end
         
-        if table.find(participant.ChosenChests, chestNumber) then
+        if table.find(participant.ChosenChests, chestNum) then
             return true
         end
     end
@@ -159,22 +182,22 @@ function ChestGameHelper.getTotalChests(chestGame: ChestGameDataTypes.ChestGame)
     return chestGame.GridSizeX * chestGame.GridSizeY
 end
 
-function ChestGameHelper.getChestGridPosition(chestGame: ChestGameDataTypes.ChestGame, chestNumber: number): (number, number)
+function ChestGameHelper.getChestGridPosition(chestGame: ChestGameDataTypes.ChestGame, chestNum: number): (number, number)
     assert(chestGame, "Chest game was not provided!")
-    assert(chestNumber, "Chest number was not provided!")
-    assert(typeof(chestNumber) == "number", "Chest number must be a number!")
+    assert(chestNum, "Chest number was not provided!")
+    assert(typeof(chestNum) == "number", "Chest number must be a number!")
     
-    local gridX = ((chestNumber-1) % chestGame.GridSizeX) * 4 - (chestGame.GridSizeX-1) * 2
-    local gridY = math.floor((chestNumber-1) / chestGame.GridSizeX) * 4 - (chestGame.GridSizeY-1) * 2
+    local gridX = ((chestNum-1) % chestGame.GridSizeX) * 4 - (chestGame.GridSizeX-1) * 2
+    local gridY = math.floor((chestNum-1) / chestGame.GridSizeX) * 4 - (chestGame.GridSizeY-1) * 2
     return gridX, gridY
 end
 
-function ChestGameHelper.isValidChestNumber(chestGame: ChestGameDataTypes.ChestGame, chestNumber: number): boolean
+function ChestGameHelper.isValidchestNum(chestGame: ChestGameDataTypes.ChestGame, chestNum: number): boolean
     assert(chestGame, "Chest game was not provided!")
-    assert(chestNumber, "Chest number was not provided!")
-    assert(typeof(chestNumber) == "number", "Chest number must be a number!")
+    assert(chestNum, "Chest number was not provided!")
+    assert(typeof(chestNum) == "number", "Chest number must be a number!")
     
-    return chestNumber >= 1 and chestNumber <= ChestGameHelper.getTotalChests(chestGame)
+    return chestNum >= 1 and chestNum <= ChestGameHelper.getTotalChests(chestGame)
 end
 
 -- Consolidated duplicate functions from other modules
@@ -190,9 +213,9 @@ function ChestGameHelper.getUnopenedChests(chestGameID: string): {number}
     
     -- Generate all possible chests (1 to total chests)
     local totalChests = chestGame.GridSizeX * chestGame.GridSizeY
-    for chestNumber = 1, totalChests do
-        if not table.find(chestGame.OpenedChests, chestNumber) then
-            table.insert(unopenedChests, chestNumber)
+    for chestNum = 1, totalChests do
+        if not table.find(chestGame.OpenedChests, chestNum) then
+            table.insert(unopenedChests, chestNum)
         end
     end
     
@@ -210,10 +233,12 @@ function ChestGameHelper.getRandomUnopenedChest(chestGameID: string, excludePart
     local unopenedChests = ChestGameHelper.getUnopenedChests(chestGameID)
     local validChests: {number} = {}
     
-    for _, chestNumber in unopenedChests do
-        if not ChestGameHelper.isBadChest(chestGameID, chestNumber, excludeParticipantID) then
-            table.insert(validChests, chestNumber)
+    for _, chestNum in unopenedChests do
+        if excludeParticipantID and ChestGameHelper.isChestOwnedByParticipant(chestGameID, chestNum, excludeParticipantID) then
+            continue
         end
+
+        table.insert(validChests, chestNum)
     end
     
     if #validChests == 0 then

@@ -11,6 +11,7 @@ export type ChestGame = {
     CurrentTurnParticipantID : string?,
     OpenedChests : {number},
     DefaultChairType : string,
+    AnimationEnds : number?,
     Participants : {
         [string] : ChestGameParticipant
     },
@@ -28,6 +29,7 @@ export type ChestGameParticipant = {
     ChestType : string,
     ChairType : string,
     Index : number,
+    MaxBadChests : number,
 }
 
 export type ChestGameState = "Dormant" | "ChoosingChests" | "InAction" | "Conclusion"

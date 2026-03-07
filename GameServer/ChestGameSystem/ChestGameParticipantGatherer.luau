@@ -54,6 +54,30 @@ local function onPlayerUnseated(chestGameID : string, player : Player, participa
     ChestGameState:GetServer().removeParticipant(chestGameID, participantID)
 end
 
+local function addAIParticipants(chestGameID: string, chestGame: ChestGameDataTypes.ChestGame)
+    local chestGameInstance : Instance = StreamingLibServer.getInstance(chestGame.InstanceStreamableID)
+    local seatsFolder : Folder = chestGameInstance.Seats
+    local seats = seatsFolder:GetChildren()
+
+    for i, seat : Seat in seats do
+        if i >= #seats then
+            continue
+        end
+        
+        local participantID = seat.Name
+
+        ChestGameState:GetServer().addParticipant(chestGameID, participantID, {
+            UserIDString = `0`,
+            ChosenChests = {},
+            HealthPoints = 3,
+            HealthPointsMax = 3,
+            ChestType = "ObsidianChest",
+            ChairType = chestGame.DefaultChairType,
+            Index = seat:GetAttribute("ParticipantIndex"),
+        })
+    end
+end
+
 local function onChestGameCreated(chestGameID: string, chestGame : ChestGameDataTypes.ChestGame)
     local chestGameInstance : Instance = StreamingLibServer.getInstance(chestGame.InstanceStreamableID)
     local seatsFolder : Folder = chestGameInstance.Seats
@@ -76,19 +100,7 @@ local function onChestGameCreated(chestGameID: string, chestGame : ChestGameData
     end
 
     if RunService:IsStudio() then
-        for i = 1, chestGame.MaxPlayers-1 do
-            local participantID = `Player{i}`
-
-            ChestGameState:GetServer().addParticipant(chestGameID, participantID, {
-                UserIDString = `0`,
-                ChosenChests = {},
-                HealthPoints = 3,
-                HealthPointsMax = 3,
-                ChestType = "ObsidianChest",
-                ChairType = chestGame.DefaultChairType,
-                Index = i,
-            })
-        end
+        addAIParticipants(chestGameID, chestGame)
     end
 end
 

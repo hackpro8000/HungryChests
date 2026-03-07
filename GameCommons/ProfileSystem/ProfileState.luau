@@ -1,5 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local EngagementRewardTypes = require(ReplicatedStorage.GameCommons.EngagementRewardSystem.EngagementRewardTypes)
+local DailyRewardTypes = require(ReplicatedStorage.GameCommons.DailyRewardSystem.DailyRewardTypes)
 local ProfileSystemTypes = require(script.Parent.ProfileSystemTypes)
 local DataLib = require(ReplicatedStorage.TLib.DataLib)
 
@@ -72,6 +74,34 @@ Actions.incrementShallowValue = DataLib.Action(function(profileID : string, key 
     assert(typeof(currentValue) == "number", `Current value for key {key} must be number, got {typeof(currentValue)}`)
     
     Actions.setShallowValue(profileID, key, currentValue + amount)
+end)
+
+Actions.givePowerUp = DataLib.Action(function(profileID : string, powerUp : string, amount : number)
+    assert(profileID, "Parameter `profileID` cannot be nil!")
+    assert(powerUp, "Parameter `powerUp` cannot be nil!")
+    assert(amount, "Parameter `amount` cannot be nil!")
+    assert(typeof(amount) == "number", `amount must be number, got {typeof(amount)}`)
+
+    local profile = Data.Profiles[profileID]
+    assert(profile, `Could not find profile with ID: {profileID}`)
+
+    local currentValue = profile.PowerUps[powerUp] or 0
+    
+    profile.PowerUps[powerUp] = currentValue + amount
+end)
+
+Actions.usePowerUp = DataLib.Action(function(profileID : string, powerUp : string, amount : number)
+    assert(profileID, "Parameter `profileID` cannot be nil!")
+    assert(powerUp, "Parameter `powerUp` cannot be nil!")
+    assert(amount, "Parameter `amount` cannot be nil!")
+    assert(typeof(amount) == "number", `amount must be number, got {typeof(amount)}`)
+
+    local profile = Data.Profiles[profileID]
+    assert(profile, `Could not find profile with ID: {profileID}`)
+
+    local currentValue = profile.PowerUps[powerUp] or 0
+    
+    profile.PowerUps[powerUp] = currentValue - amount
 end)
 
 Actions.giveChestGameReward = DataLib.Action(function(profileID : string, primaryCurrencyReward : number, trophyReward : number, winAmount : number?, winStreakAmount : number?)
@@ -158,6 +188,26 @@ Actions.unequipChair = DataLib.Action(function(profileID : string)
     assert(profile, `Could not find profile with ID: {profileID}`)
     
     profile.ChairEquippedType = nil
+end)
+
+Actions.setEngagementTracker = DataLib.Action(function(profileID : string, engagementTracker : EngagementRewardTypes.EngagementTracker)
+    assert(profileID, "Profile ID not provided!")
+    assert(engagementTracker, "Engagement tracker not provided!")
+
+    local profile = Data.Profiles[profileID]
+    assert(profile, `Could not find profile with ID: {profileID}`)
+    
+    profile.EngagementTracker = engagementTracker
+end)
+
+Actions.setDailyTracker = DataLib.Action(function(profileID : string, dailyTracker : DailyRewardTypes.DailyTracker)
+    assert(profileID, "Profile ID not provided!")
+    assert(dailyTracker, "Daily tracker not provided!")
+
+    local profile = Data.Profiles[profileID]
+    assert(profile, `Could not find profile with ID: {profileID}`)
+    
+    profile.DailyTracker = dailyTracker
 end)
 
 return DataLib.StateContainer(Actions, Data)

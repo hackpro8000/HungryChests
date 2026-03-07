@@ -1,63 +1,125 @@
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local IChestGameRenderer = require(script.Parent.IChestGameRenderer)
 local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
 local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
 local ChestGameHelper = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameHelper)
+local AnimatedChest = require(script.Parent.AnimatedChest)
+local IChestGameRenderer = require(script.Parent.IChestGameRenderer)
 local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
-local NetLibClient = require(ReplicatedStorage.TLib.NetLib.NetLibClient)
 local StreamingLibClient = require(ReplicatedStorage.TLib.StreamingLib.StreamingLibClient)
 
-local RE_ChooseChest = NetLibClient.RemoteEvent("ChestGameSystem/ChooseChest")
-local RE_OpenChest = NetLibClient.RemoteEvent("ChestGameSystem/OpenChest")
+local AnimatedChests = {}
 
-local LocalPlayer = Players.LocalPlayer
-local ChestPrefabs = ReplicatedStorage.Resources.Prefabs.Chests
+local function loadChestAnimations(animatedChest : AnimatedChest.AnimatedChest)
+    local animationsFolder = ReplicatedStorage.Resources.Animations.Chests:FindFirstChild(animatedChest.ChestType)
 
-BootEvents.NetworkStarted:Connect(function()
-    for chestGameID: string, chestGame: ChestGameDataTypes.ChestGame in ChestGameState.Data.ChestGameCollection do
-        IChestGameRenderer.renderChairs(chestGameID)
+    if animationsFolder == nil then
+        return
     end
-end)
+    
+    animatedChest:LoadAnimation(animationsFolder:FindFirstChild("ChestOpen"), "ChestOpen").Looped = false
+    animatedChest:LoadAnimation(animationsFolder:FindFirstChild("PlayerChomp"), "PlayerChomp").Looped = false
+    animatedChest:LoadAnimation(animationsFolder:FindFirstChild("PlayerEaten"), "PlayerEaten").Looped = false
+end
 
-ChestGameState.chooseChest.listen(function(chestGameID: string, participantID: string, chestNumber: number)
-    local activeChestGameID, _, activeParticipantID = ChestGameHelper.getPlayerChestGame(LocalPlayer)
+local function createAnimatedChests(chestGameID : string)
+    if AnimatedChests[chestGameID] then
+        return
+    end
+    
+    AnimatedChests[chestGameID] = {}
 
-    if chestGameID ~= activeChestGameID then
+    local chestGame : ChestGameDataTypes.ChestGame = ChestGameState.Data.ChestGameCollection[chestGameID]
+    local chestGameInstance : Model? = StreamingLibClient.getInstance(chestGame.InstanceStreamableID)
+    local totalChests : number = ChestGameHelper.getTotalChests(chestGame)
+    local participantCount : number = ChestGameHelper.countParticipants(chestGame)
+
+    if chestGameInstance == nil then
         return
     end
 
-    IChestGameRenderer.updateCurrentChestRendering(chestGameID, activeParticipantID)
-end)
+    for chestNum : number = 1, totalChests do
+        local gridX : number, gridY : number = ChestGameHelper.getChestGridPosition(chestGame, chestNum)
+        local vectorOffset : Vector3 = Vector3.new(gridX, 0, gridY)
+        local cframe : CFrame = chestGameInstance.Mat.CFrame * CFrame.new(vectorOffset) * CFrame.Angles(0, math.pi, 0)
+        local participantIndex : number = ((chestNum-1) % participantCount) + 1
+        local _, participant : ChestGameDataTypes.ChestGameParticipant? = ChestGameHelper.getParticipantByIndex(chestGameID, participantIndex)
+        local chestType : string = participant.ChestType
 
-ChestGameState.changeState.listen(function(chestGameID: string, state: "Active" | "ChoosingChests" | "Dormant")
-    local activeChestGameID: string, activeChestGame: ChestGameDataTypes.ChestGame?, activeParticipantID: string = ChestGameHelper.getPlayerChestGame(LocalPlayer)
+        local animatedChest : AnimatedChest.AnimatedChest = AnimatedChest.new(chestType)
+        animatedChest:SetRenderCFrame(cframe)
+        animatedChest:SetRenderParent(chestGameInstance)
+        animatedChest:Render()
+        loadChestAnimations(animatedChest)
+
+        AnimatedChests[chestGameID][chestNum] = animatedChest
+    end
+end
+
+local function clearAnimatedChests(chestGameID : string)
+    if AnimatedChests[chestGameID] == nil then
+        return
+    end
     
-    if chestGameID == activeChestGameID and activeChestGame then
-        local chestGameInstance: Model? = StreamingLibClient.getInstance(activeChestGame.InstanceStreamableID)
-        if chestGameInstance == nil then
-            return
-        end
-        
-        if state == "ChoosingChests" then
-            IChestGameRenderer.renderInteractableChests(chestGameID, activeParticipantID, function(chestNum: number)
-                RE_ChooseChest:FireServer(chestNum)
-            end)
-        elseif state == "Active" then
-            IChestGameRenderer.renderInteractableChests(chestGameID, activeParticipantID, function(chestNum: number)
-                RE_ChooseChest:FireServer(chestNum)
-            end)
-        end
+    for chestNum : number, animatedChest : AnimatedChest.AnimatedChest in AnimatedChests[chestGameID] do
+        animatedChest:Destroy()
+    end
+
+    AnimatedChests[chestGameID] = nil
+end
+
+local function onChestGameCreated(chestGameID : string)
+    IChestGameRenderer.renderChairs(chestGameID)
+end
+
+ChestGameState.changeState.listen(function(chestGameID: string, state: "ChoosingChests" | "Conclusion" | "Dormant" | "InAction")
+    if state == "ChoosingChests" or state == "InAction" then
+        createAnimatedChests(chestGameID)
     else
-        if state == "ChoosingChests" or state == "Active" then
-            IChestGameRenderer.renderGridChests(chestGameID, activeParticipantID)
-        end
+        clearAnimatedChests(chestGameID)
     end
 end)
 
-ChestGameState.createChestGame.listen(function(chestGameID: string, chestGame: ChestGameDataTypes.ChestGame)
-    IChestGameRenderer.renderChairs(chestGameID)
+ChestGameState.openBadChest.listen(function(chestGameID: string, participantID: string, chestNum: number)
+    if AnimatedChests[chestGameID] == nil then
+        return
+    end
+
+    local animatedChest : AnimatedChest.AnimatedChest? = AnimatedChests[chestGameID][chestNum]
+
+    if animatedChest then
+        animatedChest:DeclareBadChest()
+        animatedChest:Render()
+        loadChestAnimations(animatedChest)
+        animatedChest:GetAnimationTrack("PlayerChomp"):Play(0, 2, 1)
+        animatedChest:GetAnimationTrack("PlayerChomp").Ended:Once(function()
+            animatedChest:SinkIntoFloor()
+        end)
+    end
+end)
+
+ChestGameState.openSafeChest.listen(function(chestGameID: string, participantID: string, chestNum: number)
+    if AnimatedChests[chestGameID] == nil then
+        return
+    end
+
+    local animatedChest : AnimatedChest.AnimatedChest? = AnimatedChests[chestGameID][chestNum]
+
+    if animatedChest then
+        animatedChest:DeclareGoodChest()
+        animatedChest:Render()
+        loadChestAnimations(animatedChest)
+        animatedChest:GetAnimationTrack("ChestOpen"):Play(0, 2, 1)
+        animatedChest:GetAnimationTrack("ChestOpen").Ended:Once(function()
+            animatedChest:SinkIntoFloor()
+        end)
+    end
+end)
+
+ChestGameState.changeState.listenBefore(function(chestGameID: string, state: "ChoosingChests" | "Dormant" | "InAction" | "Conclusion")
+    if state == "Dormant" then
+        IChestGameRenderer.cleanOldChairRendering(chestGameID)
+    end
 end)
 
 ChestGameState.addParticipant.listen(function(chestGameID: string, participantID: string, participant: ChestGameDataTypes.ChestGameParticipant)
@@ -68,94 +130,12 @@ ChestGameState.removeParticipant.listen(function(chestGameID: string, participan
     IChestGameRenderer.renderChairs(chestGameID)
 end)
 
--- Listen for state changes to handle InAction rendering
-ChestGameState.changeState.listen(function(chestGameID: string, state: "ChoosingChests" | "Dormant" | "InAction")
-    local activeChestGameID: string, activeChestGame: ChestGameDataTypes.ChestGame, activeParticipantID: string = ChestGameHelper.getPlayerChestGame(LocalPlayer)
-    
-    if state == "InAction" then
-        if chestGameID == activeChestGameID and activeChestGame then
-            local isMyTurn = activeChestGame.CurrentTurnParticipantID == activeParticipantID
-            IChestGameRenderer.renderInteractableChests(chestGameID, activeParticipantID, function(chestNum: number)
-                if isMyTurn then
-                    RE_OpenChest:FireServer(chestNum)
-                end
-            end)
-            IChestGameRenderer.updateCurrentChestRendering(chestGameID, activeParticipantID)
-        else
-            IChestGameRenderer.renderGridChests(chestGameID, activeParticipantID)
-        end
-    end
-end)
+BootEvents.NetworkStarted:Connect(function()
+    for chestGameID: string, chestGame: ChestGameDataTypes.ChestGame in ChestGameState.Data.ChestGameCollection do
+		task.spawn(onChestGameCreated, chestGameID, chestGame)
+	end
 
--- Listen for current turn participant changes
-ChestGameState.setCurrentTurnParticipant.listen(function(chestGameID: string, participantID: string?)
-    local activeChestGameID: string, activeChestGame: ChestGameDataTypes.ChestGame, activeParticipantID: string = ChestGameHelper.getPlayerChestGame(LocalPlayer)
-
-    if chestGameID == activeChestGameID and activeChestGame then
-        if activeChestGame.State == "InAction" then
-            local isMyTurn = participantID == activeParticipantID
-            IChestGameRenderer.renderInteractableChests(chestGameID, activeParticipantID, function(chestNum: number)
-                if isMyTurn then
-                    RE_OpenChest:FireServer(chestNum)
-                end
-            end)
-            IChestGameRenderer.updateCurrentChestRendering(chestGameID, activeParticipantID)
-        end
-    else
-        IChestGameRenderer.renderGridChests(chestGameID, activeParticipantID)
-    end
-end)
-
--- Listen for chest openings to update rendering
-ChestGameState.openChest.listen(function(chestGameID: string, participantID: string, chestNumber: number)
-    local activeChestGameID: string, activeChestGame: ChestGameDataTypes.ChestGame, activeParticipantID: string = ChestGameHelper.getPlayerChestGame(LocalPlayer)
-
-    if chestGameID == activeChestGameID and activeChestGame then
-        if activeChestGame.State == "InAction" then
-            local isMyTurn = activeChestGame.CurrentTurnParticipantID == activeParticipantID
-            IChestGameRenderer.renderInteractableChests(chestGameID, activeParticipantID, function(chestNum: number)
-                if isMyTurn then
-                    RE_OpenChest:FireServer(chestNum)
-                end
-            end)
-            IChestGameRenderer.updateCurrentChestRendering(chestGameID, activeParticipantID)
-        end
-    else
-        IChestGameRenderer.renderGridChests(chestGameID, activeParticipantID)
-    end
-end)
-
--- Listen for health point changes to update rendering
-ChestGameState.reduceHealthPoints.listen(function(chestGameID: string, participantID: string, damage: number)
-    local activeChestGameID: string, activeChestGame: ChestGameDataTypes.ChestGame, activeParticipantID: string = ChestGameHelper.getPlayerChestGame(LocalPlayer)
-
-    if chestGameID == activeChestGameID and activeChestGame then
-        if activeChestGame.State == "InAction" then
-            local isMyTurn = activeChestGame.CurrentTurnParticipantID == activeParticipantID
-            IChestGameRenderer.renderInteractableChests(chestGameID, activeParticipantID, function(chestNum: number)
-                if isMyTurn then
-                    RE_OpenChest:FireServer(chestNum)
-                end
-            end)
-            IChestGameRenderer.updateCurrentChestRendering(chestGameID, activeParticipantID)
-        end
-    else
-        IChestGameRenderer.renderGridChests(chestGameID, activeParticipantID)
-    end
-end)
-
-ChestGameState.changeState.listen(function(chestGameID: string, state: "Active" | "ChoosingChests" | "Dormant" | "Conclusion")
-    if state == "Conclusion" then
-        IChestGameRenderer.cleanOldChestRendering(chestGameID)
-        IChestGameRenderer.cleanOldChairRendering(chestGameID)
-    end
-end)
-
-ChestGameState.changeState.listenBefore(function(chestGameID: string, state: "ChoosingChests" | "Dormant" | "InAction" | "Conclusion")
-    if state == "Dormant" then
-        IChestGameRenderer.cleanOldChestRendering(chestGameID)
-        IChestGameRenderer.cleanOldChairRendering(chestGameID)
-    end
+	ChestGameState.createChestGame.listen(onChestGameCreated)
 end)
 
 return nil

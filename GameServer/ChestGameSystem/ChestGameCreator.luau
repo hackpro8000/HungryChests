@@ -15,7 +15,7 @@ local function handleChestGameInstance(chestGameInstance : Instance)
     assert(chestGameType, "ChestGameType attribute is required!")
     
     local config = ChestGameConfigurations[chestGameType]
-    assert(config, `Invalid ChestGameType: {chestGameType}. Valid types: 2Players, 4Players`)
+    assert(config, `Invalid ChestGameType: {chestGameType}`)
     
     local chestGameID : string = HttpService:GenerateGUID(false)
     local chestGame : ChestGameDataTypes.ChestGame = {
@@ -29,6 +29,7 @@ local function handleChestGameInstance(chestGameInstance : Instance)
         TimerMin = nil,
         TimerMax = nil,
         CurrentTurnParticipantID = nil,
+        AnimationEnds = nil,
         OpenedChests = {},
         DefaultChairType = chestGameInstance:GetAttribute("DefaultChairType") or "OakChair",
         Participants = {},

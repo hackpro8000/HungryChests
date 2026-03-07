@@ -14,6 +14,7 @@ local RE_EquipChair = NetLibClient.RemoteEvent("InventorySystem/EquipChair")
 
 local ChestTabRendering = {}
 local ChairTabRendering = {}
+local PowerUpsTabRendering = {}
 
 local function clearRendering(rendering : {Instance})
     for _, instance : Instance in rendering do
@@ -21,6 +22,27 @@ local function clearRendering(rendering : {Instance})
     end
 
     table.clear(rendering)
+end
+
+local function renderPowerUpsTab(profile : ProfileSystemTypes.Profile)
+    clearRendering(PowerUpsTabRendering)
+    local tabInstance = InventoryViewer:FromRef("Tabs/PowerUps")
+    local cellTemplate = tabInstance.CellTemplate
+    
+    for powerUp : string, amount : number in profile.PowerUps do
+        local renderedCell = cellTemplate:Clone()
+        renderedCell.Title.Text = powerUp
+        renderedCell.Visible = true
+        renderedCell.Icon.BackgroundColor3 = Color3.new(0,0,0)
+
+        renderedCell.Selector.MouseButton1Up:Once(function()
+
+        end)
+        
+        renderedCell.Parent = tabInstance
+
+        table.insert(PowerUpsTabRendering, renderedCell)
+    end
 end
 
 local function renderChestsTab(profile : ProfileSystemTypes.Profile)
@@ -80,6 +102,7 @@ end
 local function onProfileLoaded(profile : ProfileSystemTypes.Profile)
     renderChestsTab(profile)
     renderChairsTab(profile)
+    renderPowerUpsTab(profile)
 end
 
 BootEvents.NetworkStarted:Connect(function()
@@ -136,6 +159,26 @@ BootEvents.NetworkStarted:Connect(function()
         local profile = ProfileState.Data.Profiles[localProfileID]
 
         renderChairsTab(profile)
+    end)
+    
+    ProfileState.givePowerUp.listen(function(profileID: string, powerUp: string, amount: number)
+        if profileID ~= localProfileID then
+            return
+        end
+
+        local profile = ProfileState.Data.Profiles[localProfileID]
+
+        renderPowerUpsTab(profile)
+    end)
+    
+    ProfileState.usePowerUp.listen(function(profileID: string, powerUp: string, amount: number)
+        if profileID ~= localProfileID then
+            return
+        end
+
+        local profile = ProfileState.Data.Profiles[localProfileID]
+
+        renderPowerUpsTab(profile)
     end)
 end)
 

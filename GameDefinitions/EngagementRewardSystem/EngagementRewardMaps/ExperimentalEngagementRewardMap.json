@@ -1,0 +1,76 @@
+[
+    {
+        "Interval" : 300,
+        "Reward" : "Cash:200"
+    },
+
+    {
+        "Interval" : 300,
+        "Reward" : "Cash:300"
+    },
+
+    {
+        "Interval" : 300,
+        "Reward" : "ExtraMimics:3"
+    },
+
+    {
+        "Interval" : 300,
+        "Reward" : "Trophies:10"
+    },
+
+    {
+        "Interval" : 300,
+        "Reward" : "RenewWinstreak:2"
+    },
+
+    {
+        "Interval" : 300,
+        "Reward" : "CashMultiplier:1:2:10"
+    },
+
+    {
+        "Interval" : 600,
+        "Reward" : "Cash:500"
+    },
+
+    {
+        "Interval" : 600,
+        "Reward" : "Trophies:15"
+    },
+
+    {
+        "Interval" : 600,
+        "Reward" : "PremiumChest:1"
+    },
+
+    {
+        "Interval" : 600,
+        "Reward" : "Cash:750"
+    },
+
+    {
+        "Interval" : 600,
+        "Reward" : "Trophies:20"
+    },
+
+    {
+        "Interval" : 600,
+        "Reward" : "TrophyMultiplier:1:2:10"
+    },
+
+    {
+        "Interval" : 600,
+        "Reward" : "Cash:1000"
+    },
+
+    {
+        "Interval" : 600,
+        "Reward" : "WinstreakMultiplier:1:2:10"
+    },
+    
+    {
+        "Interval" : 600,
+        "Reward" : "PremiumThrone:1"
+    }
+]

@@ -1,0 +1,23 @@
+[
+    {
+        "Reward" : "Cash:400"
+    },
+    {
+        "Reward" : "Cash:600"
+    },
+    {
+        "Reward" : "Cash:1000"
+    },
+    {
+        "Reward" : "Cash:1400&Trophies:50"
+    },
+    {
+        "Reward" : "Cash:1600&Trophies:75"
+    },
+    {
+        "Reward" : "Cash:2000&Trophies:100&RenewWinstreak:1"
+    },
+    {
+        "Reward" : "PremiumChest:1"
+    }
+]
