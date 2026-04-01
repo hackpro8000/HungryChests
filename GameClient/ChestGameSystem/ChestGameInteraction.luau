@@ -1,10 +1,10 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
-local ChestGameHelper = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameHelper)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local ChestGameDataTypes = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameDataTypes)
+local ChestGameHelper = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameHelper)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 local NetLibClient = require(ReplicatedStorage.TLib.NetLib.NetLibClient)
 local StreamingLibClient = require(ReplicatedStorage.TLib.StreamingLib.StreamingLibClient)
 local ChestInteractible = require(script.Parent.ChestInteractible)
@@ -41,7 +41,7 @@ local function onChestGameUpdated(chestGameID: string)
 	if state == "ChoosingChests" then
         enableInteractions = true
 	elseif state == "InAction" then
-        if chestGame.CurrentTurnParticipantID == activeParticipantID then
+        if chestGame.CurrentTurn and chestGame.CurrentTurn.ParticipantID == activeParticipantID then
             enableInteractions = true
         end
 	end
@@ -62,18 +62,16 @@ local function onChestGameUpdated(chestGameID: string)
 end
 
 --[[
-    Bulky initialization code (MAY BE DISTRACTING)
+    Bulky initialization code (MAY BE DISTRACTING PAST THIS POINT)
 ]]
 local function onChestGameCreated(chestGameID: string, chestGame: ChestGameDataTypes.ChestGame)
-    print("CHEST GAME CREATED")
 	local function streamedIn(chestGameInstance: Instance)
-        print("INSTANCE STREAMED IN")
 		Interactibles[chestGameID] = {}
 
 		local totalChests = ChestGameHelper.getTotalChests(chestGame)
 
 		for chestNum: number = 1, totalChests, 1 do
-			local gridX: number, gridY: number = ChestGameHelper.getChestGridPosition(chestGame, chestNum)
+			local gridX: number, gridY: number = ChestGameHelper.getChestGridXY(chestGame, chestNum)
 			local cframe: CFrame = chestGameInstance.Mat.CFrame * CFrame.new(gridX, 2, gridY)
 			local chestInteractible: ChestInteractible.ChestInteractible = ChestInteractible.new(cframe)
 
@@ -111,7 +109,7 @@ BootEvents.NetworkStarted:Connect(function()
 
 	ChestGameState.createChestGame.listen(onChestGameCreated)
 	ChestGameState.changeState.listen(onChestGameUpdated)
-    ChestGameState.setCurrentTurnParticipant.listen(onChestGameUpdated)
+    ChestGameState.nextTurn.listen(onChestGameUpdated)
 end)
 
 return nil

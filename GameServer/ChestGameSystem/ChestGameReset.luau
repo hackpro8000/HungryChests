@@ -1,8 +1,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
-local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local ChestGameDataTypes = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameDataTypes)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 
 -- Listen for state changes and reset when reverting to Dormant
 ChestGameState.changeState.listen(function(chestGameID: string, newState: ChestGameDataTypes.ChestGameState)

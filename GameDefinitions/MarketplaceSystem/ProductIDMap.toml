@@ -1,3 +1,4 @@
+# COIN BOOSTS
 CoinBoost1 = 3523186791
 CoinBoost2 = 3523187033
 CoinBoost3 = 3523187466
@@ -5,12 +6,24 @@ CoinBoost4 = 3523187753
 CoinBoost5 = 3523188545
 CoinBoost6 = 3523188720
 
+# TROPHIES
 TrophyBoost1 = 3523921344
 TrophyBoost2 = 3523921571
 TrophyBoost3 = 3523921911
 TrophyBoost4 = 3523922106
 TrophyBoost5 = 3523922239
 TrophyBoost6 = 3523922428
+
+# DONATIONS
+Donate1 = 3565781726
+Donate2 = 3565781860
+Donate3 = 3565782228
+Donate4 = 3565782635
+Donate5 = 3565782767
+Donate6 = 3565782962
+Donate7 = 3565783113
+Donate8 = 3565783215
+Donate9 = 3565783327
 
 LuckyChestDrawPremium = 3521746613
 LuckyChestDrawPremium5 = 3526586805

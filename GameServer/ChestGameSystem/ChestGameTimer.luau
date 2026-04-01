@@ -1,8 +1,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 local TimeLib = require(ReplicatedStorage.TLib.TimeLib)
 
 local function stopExpiredTimers()

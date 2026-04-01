@@ -2,10 +2,10 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
-local ProfileSystemTypes = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileSystemTypes)
+local ChestGameDataTypes = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameDataTypes)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
+local ProfileSystemTypes = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileSystemTypes)
 local StreamingLibServer = require(ReplicatedStorage.TLib.StreamingLib.StreamingLibServer)
 
 local function getPlayerChairType(player : Player)
@@ -36,6 +36,8 @@ local function onPlayerSeated(chestGameID : string, chestGame : ChestGameDataTyp
         ChosenChests = {},
         HealthPoints = 3,
         HealthPointsMax = 3,
+        MaxBadChests = 3,
+        Effects = {},
         ChestType = getPlayerChestType(player) or "OakChest",
         ChairType = getPlayerChairType(player) or chestGame.DefaultChairType,
         Index = index
@@ -71,6 +73,8 @@ local function addAIParticipants(chestGameID: string, chestGame: ChestGameDataTy
             ChosenChests = {},
             HealthPoints = 3,
             HealthPointsMax = 3,
+            MaxBadChests = 3,
+            Effects = {},
             ChestType = "ObsidianChest",
             ChairType = chestGame.DefaultChairType,
             Index = seat:GetAttribute("ParticipantIndex"),

@@ -202,16 +202,39 @@ Actions.openChest = DataLib.Action(function(chestGameID : string, participantID 
     table.insert(chestGame.OpenedChests, chestNum)
 end)
 
-Actions.openBadChest = DataLib.Action(function(chestGameID : string, participantID : string, chestNum : number)
-    -- Encapsulator action that calls openChest for bad chest context
-    Actions.openChest(chestGameID, participantID, chestNum)
+Actions.nextTurn = DataLib.Action(function(chestGameID : string, turn : ChestGameDataTypes.ChestGameTurn)
+    assert(chestGameID, "Chest game ID was not provided!")
+    assert(turn, "Turn was not provided!")
+    assert(turn.ParticipantID, "Turn must have an associated participant ID!")
+
+    local chestGame : ChestGameDataTypes.ChestGame = assert(
+        Data.ChestGameCollection[chestGameID],
+        `Chest game {chestGameID} not found!`
+    )
+
+    chestGame.CurrentTurn = turn
 end)
 
-Actions.openSafeChest = DataLib.Action(function(chestGameID : string, participantID : string, chestNum : number)
-    -- Encapsulator action that calls openChest for safe chest context
-    Actions.openChest(chestGameID, participantID, chestNum)
+Actions.makeTurnDecision = DataLib.Action(function(chestGameID : string, decision : ChestGameDataTypes.TurnDecision)
+    assert(chestGameID, "Chest game ID was not provided!")
+    assert(decision, "Decision was not provided!")
+
+    local chestGame : ChestGameDataTypes.ChestGame = assert(
+        Data.ChestGameCollection[chestGameID],
+        `Chest game {chestGameID} not found!`
+    )
+
+    local currentTurn : ChestGameDataTypes.ChestGameTurn = assert(
+        chestGame.CurrentTurn,
+        `Chest game {chestGameID} has no current turn!`
+    )
+
+    currentTurn.Decision = decision
 end)
 
+--[[
+    Use Actions.nextTurn instead
+]]
 Actions.setCurrentTurnParticipant = DataLib.Action(function(chestGameID : string, participantID : string?)
     assert(chestGameID, "Chest game ID was not provided!")
 
@@ -257,6 +280,8 @@ Actions.eliminateParticipant = DataLib.Action(function(chestGameID : string, par
 
     participant.HealthPoints = 0
 end)
+
+
 
 Actions.cancelTimer = DataLib.Action(function(chestGameID : string)
     assert(chestGameID, "Chest game ID was not provided!")

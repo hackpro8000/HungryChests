@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local ChestGameDataTypes = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameDataTypes)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 local StreamingLibServer = require(ReplicatedStorage.TLib.StreamingLib.StreamingLibServer)
 
 ChestGameState.createChestGame.listen(function(chestGameID: string, chestGame : ChestGameDataTypes.ChestGame)

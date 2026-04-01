@@ -1,9 +1,9 @@
 local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local MarketplaceEvents = require(ReplicatedStorage.GameCommons.MarketplaceSystem.MarketplaceEvents)
+local MarketplaceEvents = require(ReplicatedStorage.GameCommon.MarketplaceSystem.MarketplaceEvents)
 local ReceiptProcessor = require(script.Parent.ReceiptProcessor)
-local MarketplaceTypes = require(ReplicatedStorage.GameCommons.MarketplaceSystem.MarketplaceTypes)
+local MarketplaceTypes = require(ReplicatedStorage.GameCommon.MarketplaceSystem.MarketplaceTypes)
 local ModuleLib = require(ReplicatedStorage.TLib.ModuleLib)
 
 function MarketplaceService.ProcessReceipt(receiptInfo : MarketplaceTypes.ReceiptInfo)

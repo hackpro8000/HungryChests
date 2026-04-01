@@ -6,5 +6,6 @@ local OrderedSignalTypes = require(ReplicatedStorage.TLib.OrderedSignal.OrderedS
 
 return {
     LuckyChestDrawRequested = OrderedSignal.new() :: OrderedSignalTypes.OrderedSignal<(LuckyDrawTypes.LuckyChestDrawRequest) -> ()>;
-    LuckyDrawRequested = OrderedSignal.new() :: OrderedSignalTypes.OrderedSignal<(luckyDrawRequest : LuckyDrawTypes.LuckyDrawRequest) -> ()>
+    LuckyDrawRequested = OrderedSignal.new() :: OrderedSignalTypes.OrderedSignal<(luckyDrawRequest : LuckyDrawTypes.LuckyDrawRequest) -> ()>;
+    LuckyDrawConfirmed = OrderedSignal.new() :: OrderedSignalTypes.OrderedSignal<(luckyDrawRequest : LuckyDrawTypes.LuckyDrawRequest) -> ()>;
 }

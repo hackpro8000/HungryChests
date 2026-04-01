@@ -1,9 +1,9 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
-local ChestGameHelper = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameHelper)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local ChestGameDataTypes = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameDataTypes)
+local ChestGameHelper = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameHelper)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 local StreamingLibClient = require(ReplicatedStorage.TLib.StreamingLib.StreamingLibClient)
 local UILib = require(ReplicatedStorage.TLib.UILib)
 
@@ -46,7 +46,7 @@ local function renderChosenIndicators(chestGameID : string, participantID : stri
     local participant : ChestGameDataTypes.ChestGameParticipant = chestGame.Participants[participantID]
 
     for _, chestNum : number in participant.ChosenChests do
-        local gridX : number, gridY : number = ChestGameHelper.getChestGridPosition(chestGame, chestNum)
+        local gridX : number, gridY : number = ChestGameHelper.getChestGridXY(chestGame, chestNum)
         local adornee = Instance.new("Part")
         adornee.Transparency = 1
         adornee.CanCollide = false

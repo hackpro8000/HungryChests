@@ -1,9 +1,9 @@
 local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
-local ProfileSystemTypes = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileSystemTypes)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
+local ProfileSystemTypes = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileSystemTypes)
 local GamepassIDMap = require(ReplicatedStorage.GameDefinitions.MarketplaceSystem.GamepassIDMap)
 
 local function profileAdded(profileID : string, profile : ProfileSystemTypes.Profile)

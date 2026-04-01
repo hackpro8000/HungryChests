@@ -1,8 +1,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 local PlayerStatsViewer = require(script.Parent.PlayerStatsViewer)
 
 local LocalPlayer = Players.LocalPlayer

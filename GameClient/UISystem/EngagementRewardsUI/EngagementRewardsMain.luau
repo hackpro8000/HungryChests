@@ -2,9 +2,9 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local EngagementRewardsViewer = require(script.Parent.EngagementRewardsViewer)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local EngagementRewardState = require(ReplicatedStorage.GameCommons.EngagementRewardSystem.EngagementRewardState)
-local EngagementRewardTypes = require(ReplicatedStorage.GameCommons.EngagementRewardSystem.EngagementRewardTypes)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local EngagementRewardState = require(ReplicatedStorage.GameCommon.EngagementRewardSystem.EngagementRewardState)
+local EngagementRewardTypes = require(ReplicatedStorage.GameCommon.EngagementRewardSystem.EngagementRewardTypes)
 local UILib = require(ReplicatedStorage.TLib.UILib)
 local NetLibClient = require(ReplicatedStorage.TLib.NetLib.NetLibClient)
 

@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local GlobalLeaderboardEvents = require(ReplicatedStorage.GameCommons.GlobalLeaderboardSystem.GlobalLeaderboardEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local GlobalLeaderboardEvents = require(ReplicatedStorage.GameCommon.GlobalLeaderboardSystem.GlobalLeaderboardEvents)
 
 local function downloadData()
     task.wait(1)

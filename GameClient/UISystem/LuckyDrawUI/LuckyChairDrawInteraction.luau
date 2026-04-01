@@ -5,7 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local LuckyChairDrawViewer = require(script.Parent.LuckyChairDrawViewer)
 local LuckyDrawNetworker = require(ReplicatedStorage.GameClient.LuckyDrawSystem.LuckyDrawNetworker)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 local ProductIDMap = require(ReplicatedStorage.GameDefinitions.MarketplaceSystem.ProductIDMap)
 
 local LocalPlayer = Players.LocalPlayer
@@ -16,6 +16,8 @@ LuckyChairDrawViewer.InteractionContext:GetButton("CommonDraw1"):ListenLMB(funct
     end
 
     LuckyDrawNetworker.requestLuckyDraw("LuckyChairDraw", "Common", 1)
+
+    task.wait(2)
 end)
 
 LuckyChairDrawViewer.InteractionContext:GetButton("CommonDraw5"):ListenLMB(function(isDown : boolean)
@@ -24,6 +26,8 @@ LuckyChairDrawViewer.InteractionContext:GetButton("CommonDraw5"):ListenLMB(funct
     end
 
     LuckyDrawNetworker.requestLuckyDraw("LuckyChairDraw", "Common", 5)
+
+    task.wait(2)
 end)
 
 LuckyChairDrawViewer.InteractionContext:GetButton("PremiumDraw1"):ListenLMB(function(isDown : boolean)

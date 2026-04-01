@@ -52,6 +52,7 @@ export type LuckyDrawTier = {
 }
 
 export type LuckyDraw = {
+    Prefabs : {[string] : Instance},
     Tiers : {[string] : LuckyDrawTier},
     Pools : {[string] : LuckyDrawPool}
 }

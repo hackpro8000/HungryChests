@@ -1,11 +1,15 @@
+local ContentProvider = game:GetService("ContentProvider")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
-local ChestGameHelper = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameHelper)
+local CharacterDoubles = require(ReplicatedStorage.GameClient.CinematicSystem.CharacterDoubles)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local ChestGameDataTypes = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameDataTypes)
+local ChestGameHelper = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameHelper)
 local AnimatedChest = require(script.Parent.AnimatedChest)
 local IChestGameRenderer = require(script.Parent.IChestGameRenderer)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 local StreamingLibClient = require(ReplicatedStorage.TLib.StreamingLib.StreamingLibClient)
 
 local AnimatedChests = {}
@@ -16,6 +20,8 @@ local function loadChestAnimations(animatedChest : AnimatedChest.AnimatedChest)
     if animationsFolder == nil then
         return
     end
+
+    ContentProvider:PreloadAsync(animationsFolder:GetChildren())
     
     animatedChest:LoadAnimation(animationsFolder:FindFirstChild("ChestOpen"), "ChestOpen").Looped = false
     animatedChest:LoadAnimation(animationsFolder:FindFirstChild("PlayerChomp"), "PlayerChomp").Looped = false
@@ -39,7 +45,7 @@ local function createAnimatedChests(chestGameID : string)
     end
 
     for chestNum : number = 1, totalChests do
-        local gridX : number, gridY : number = ChestGameHelper.getChestGridPosition(chestGame, chestNum)
+        local gridX : number, gridY : number = ChestGameHelper.getChestGridXY(chestGame, chestNum)
         local vectorOffset : Vector3 = Vector3.new(gridX, 0, gridY)
         local cframe : CFrame = chestGameInstance.Mat.CFrame * CFrame.new(vectorOffset) * CFrame.Angles(0, math.pi, 0)
         local participantIndex : number = ((chestNum-1) % participantCount) + 1
@@ -80,38 +86,130 @@ ChestGameState.changeState.listen(function(chestGameID: string, state: "Choosing
     end
 end)
 
-ChestGameState.openBadChest.listen(function(chestGameID: string, participantID: string, chestNum: number)
+--[[
+    DUDE REFACTOR THIS!!!!!
+]]
+ChestGameState.openChest.listen(function(chestGameID: string, participantID: string, chestNum: number)
     if AnimatedChests[chestGameID] == nil then
         return
     end
 
-    local animatedChest : AnimatedChest.AnimatedChest? = AnimatedChests[chestGameID][chestNum]
+    local chestGame : ChestGameDataTypes.ChestGame = assert(ChestGameState.Data.ChestGameCollection[chestGameID], `Chest game {chestGameID} not found!`)
+    local chestGameInstance : Model? = StreamingLibClient.getInstance(chestGame.InstanceStreamableID)
 
-    if animatedChest then
-        animatedChest:DeclareBadChest()
-        animatedChest:Render()
-        loadChestAnimations(animatedChest)
-        animatedChest:GetAnimationTrack("PlayerChomp"):Play(0, 2, 1)
-        animatedChest:GetAnimationTrack("PlayerChomp").Ended:Once(function()
-            animatedChest:SinkIntoFloor()
-        end)
-    end
-end)
-
-ChestGameState.openSafeChest.listen(function(chestGameID: string, participantID: string, chestNum: number)
-    if AnimatedChests[chestGameID] == nil then
+    if chestGameInstance == nil then
         return
     end
+    
+    local participant : ChestGameDataTypes.ChestGameParticipant = chestGame.Participants[participantID]
+    local seatPositionsFolder : Folder = chestGameInstance.SeatPositions
+    local seatPositionPart : Part? = nil
 
+    for _, seatPosition1 : Part in seatPositionsFolder:GetChildren() do
+        if seatPosition1:GetAttribute("ParticipantIndex") == participant.Index then
+            seatPositionPart = seatPosition1
+        end
+    end
+
+    local characterDoubleUserID = participant.UserIDString ~= "0" and tonumber(participant.UserIDString) or Players:GetUserIdFromNameAsync("TheCelvestian")
+
+    if CharacterDoubles.isDoubleReady() ~= true then
+        CharacterDoubles.preloadForUserID(characterDoubleUserID)
+    end
+
+    local characterDouble = CharacterDoubles.createDouble(characterDoubleUserID)
+    characterDouble.PrimaryPart.Anchored = false
+    characterDouble.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+    characterDouble.PrimaryPart.Anchored = true
+    characterDouble.Parent = workspace
+    local characterDoubleSize = characterDouble:GetExtentsSize()
+    
     local animatedChest : AnimatedChest.AnimatedChest? = AnimatedChests[chestGameID][chestNum]
+    
+    local r15EatenTrack : AnimationTrack = characterDouble.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Resources.Animations.R15.PlayerEatenByChest)
+    r15EatenTrack.Looped = false
+    local r15ChompTrack : AnimationTrack = characterDouble.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Resources.Animations.R15.PlayerChompedByChest)
+    r15ChompTrack.Looped = false
+    local r15OpenTrack : AnimationTrack = characterDouble.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Resources.Animations.R15.PlayerOpeningChest)
+    r15OpenTrack.Looped = false
+    local r15RunTrack : AnimationTrack = characterDouble.Humanoid.Animator:LoadAnimation(ReplicatedStorage.Resources.Animations.R15.RunAnimation)
+    r15OpenTrack.Looped = true
+    
+    local chestOpeningCFrame : CFrame = animatedChest.CurrentRig:GetPivot():ToWorldSpace(CFrame.new(0,characterDoubleSize.Y/2,-3.38))
 
     if animatedChest then
-        animatedChest:DeclareGoodChest()
-        animatedChest:Render()
-        loadChestAnimations(animatedChest)
-        animatedChest:GetAnimationTrack("ChestOpen"):Play(0, 2, 1)
-        animatedChest:GetAnimationTrack("ChestOpen").Ended:Once(function()
-            animatedChest:SinkIntoFloor()
+        local direction = (seatPositionPart.Position - chestOpeningCFrame.Position)
+        local distance = (seatPositionPart.Position - chestOpeningCFrame.Position).Magnitude
+        local walkTime = distance / 16
+        local rotation = CFrame.Angles(0, math.atan2(direction.X, direction.Z), 0)
+
+        characterDouble:PivotTo(
+            CFrame.new(
+                seatPositionPart.Position * 
+                Vector3.new(1,0,1) + 
+                Vector3.yAxis * 
+                chestOpeningCFrame.Y
+            ) * 
+            rotation
+        )
+
+        local characterTravelTween = TweenService:Create(characterDouble.PrimaryPart, 
+            TweenInfo.new(walkTime, Enum.EasingStyle.Linear), 
+
+            {
+                CFrame = CFrame.new(
+                    chestOpeningCFrame.Position * Vector3.new(1,0,1) + 
+                    Vector3.yAxis * chestOpeningCFrame.Y
+                ) * rotation
+            }
+        )
+
+        characterTravelTween:Play()
+        r15RunTrack:Play()
+        
+        task.spawn(function()
+            task.wait(walkTime)
+
+            local characterFaceChestTween = TweenService:Create(characterDouble.PrimaryPart, 
+                TweenInfo.new(0.5, Enum.EasingStyle.Exponential), 
+                {
+                    CFrame = chestOpeningCFrame * CFrame.Angles(0, math.pi, 0)
+                }
+            )
+            r15RunTrack:Stop(0)
+            characterFaceChestTween:Play()
+
+            if ChestGameHelper.isBadChest(chestGameID, chestNum) then
+                animatedChest:DeclareBadChest()
+                animatedChest:Render()
+                loadChestAnimations(animatedChest)
+                
+                if participant.HealthPoints <= 0 then
+                    animatedChest:GetAnimationTrack("PlayerEaten"):Play(0, 2, 1)
+                    task.delay(animatedChest:GetAnimationTrack("PlayerEaten").Length, function()
+                        characterDouble:Destroy()
+                        animatedChest:SinkIntoFloor()
+                    end)
+                    r15EatenTrack:Play(0, 2, 1)
+                else
+                    animatedChest:GetAnimationTrack("PlayerChomp"):Play(0, 2, 1)
+                    task.delay(animatedChest:GetAnimationTrack("PlayerChomp").Length, function()
+                        characterDouble:Destroy()
+                        animatedChest:SinkIntoFloor()
+                    end)
+                    r15ChompTrack:Play(0, 2, 1)
+                end
+            else
+                animatedChest:DeclareGoodChest()
+                animatedChest:Render()
+                loadChestAnimations(animatedChest)
+                animatedChest:GetAnimationTrack("ChestOpen"):Play(0, 2, 1)
+                task.delay(animatedChest:GetAnimationTrack("ChestOpen").Length, function()
+                    animatedChest:SinkIntoFloor()
+                    characterDouble:Destroy()
+                end)
+                r15OpenTrack:Play(0, 2, 1)
+            end
         end)
     end
 end)

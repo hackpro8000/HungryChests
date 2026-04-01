@@ -1,6 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 local NetLibServer = require(ReplicatedStorage.TLib.NetLib.NetLibServer)
 
 local RE_EquipChair = NetLibServer.RemoteEvent("InventorySystem/EquipChair")

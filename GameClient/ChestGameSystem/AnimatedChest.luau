@@ -68,7 +68,7 @@ function AnimatedChest.new(chestType : string)
     self.__renderParent = nil :: Instance?
     self.__renderCFrame = CFrame.identity :: CFrame
     self.__currentAnimationTracks = {} :: {[string] : AnimationTrack}
-    self.ChestType = chestType :: string
+    self.ChestType = chestType or "OakChest" :: string
     self.IsBadChest = false :: boolean
     self.CurrentRig = nil :: Model?
     self.CurrentAnimator = nil :: Animator?
@@ -84,10 +84,10 @@ function AnimatedChest.SinkIntoFloor(self : AnimatedChest)
         return
     end
     
-    local mainBone : Bone = self.CurrentRig.RootPart.Bone
+    local primaryPart = self.CurrentRig.PrimaryPart
 
-    local tween = TweenService:Create(mainBone, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-        Position = mainBone.Position - Vector3.yAxis * 6
+    local tween = TweenService:Create(primaryPart, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        CFrame = primaryPart.CFrame * CFrame.new(0,-6,0)
     })
 
     tween:Play()

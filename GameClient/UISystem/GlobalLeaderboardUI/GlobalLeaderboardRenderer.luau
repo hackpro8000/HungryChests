@@ -2,9 +2,9 @@ local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local GlobalLeaderboardSurfaceUI = require(script.Parent.GlobalLeaderboardSurfaceUI)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local GlobalLeaderboardState = require(ReplicatedStorage.GameCommons.GlobalLeaderboardSystem.GlobalLeaderboardState)
-local GlobalLeaderboardTypes = require(ReplicatedStorage.GameCommons.GlobalLeaderboardSystem.GlobalLeaderboardTypes)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local GlobalLeaderboardState = require(ReplicatedStorage.GameCommon.GlobalLeaderboardSystem.GlobalLeaderboardState)
+local GlobalLeaderboardTypes = require(ReplicatedStorage.GameCommon.GlobalLeaderboardSystem.GlobalLeaderboardTypes)
 
 local LeaderboardSurfaceUIMemory = {} :: {[string] : {
     typeof(GlobalLeaderboardSurfaceUI.new())
@@ -52,6 +52,10 @@ BootEvents.NetworkStarted:Connect(function()
     CollectionService:GetInstanceAddedSignal("GlobalLeaderboard"):Connect(globalLeaderboardInstanceAdded)
 
     for leaderboardID in GlobalLeaderboardState.Data.Leaderboards do
+        for _, globalLeaderboardInstance in CollectionService:GetTagged("GlobalLeaderboardSurface") do
+            globalLeaderboardInstanceAdded(globalLeaderboardInstance)
+        end
+
         updateLeaderboards(leaderboardID)
     end
 

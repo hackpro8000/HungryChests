@@ -2,10 +2,10 @@ local REWARD_ID = "Cash"
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local DailyRewardEvents = require(ReplicatedStorage.GameCommons.DailyRewardSystem.DailyRewardEvents)
-local DailyRewardTypes = require(ReplicatedStorage.GameCommons.DailyRewardSystem.DailyRewardTypes)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
-local ProfileSystemTypes = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileSystemTypes)
+local DailyRewardEvents = require(ReplicatedStorage.GameCommon.DailyRewardSystem.DailyRewardEvents)
+local DailyRewardTypes = require(ReplicatedStorage.GameCommon.DailyRewardSystem.DailyRewardTypes)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
+local ProfileSystemTypes = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileSystemTypes)
 
 DailyRewardEvents.OnProcessReward:Connect(function(rewardProcessRequest : DailyRewardTypes.DailyRewardProcessRequest)
     if not rewardProcessRequest:ContainsReward(REWARD_ID) then

@@ -2,10 +2,10 @@ local CollectionService = game:GetService("CollectionService")
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local ChestGameDataTypes = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameDataTypes)
 local ChestGameConfigurations = require(ReplicatedStorage.GameDefinitions.ChestGameSystem.ChestGameConfigurations)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 local StreamingLib = require(ReplicatedStorage.TLib.StreamingLib)
 
 local CHEST_GAME_TAG = "ChestGame"

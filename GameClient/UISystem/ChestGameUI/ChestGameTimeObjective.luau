@@ -3,9 +3,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local ChestGameViewer = require(script.Parent.ChestGameViewer)
-local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
-local ChestGameHelper = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameHelper)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local ChestGameDataTypes = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameDataTypes)
+local ChestGameHelper = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameHelper)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 local TimeLib = require(ReplicatedStorage.TLib.TimeLib)
 
 local LocalPlayer = Players.LocalPlayer
@@ -20,10 +20,12 @@ RunService.Heartbeat:Connect(function(a0: number)
         if activeChestGame.State == "ChoosingChests" then
             objective = "CHOOSE YOUR CHESTS!"
         elseif activeChestGame.State == "InAction" then
-            if activeChestGame.CurrentTurnParticipantID then
-                local currentParticipant = activeChestGame.Participants[activeChestGame.CurrentTurnParticipantID]
+            local turn : ChestGameDataTypes.ChestGameTurn = activeChestGame.CurrentTurn
+
+            if turn and turn.ParticipantID then
+                local currentParticipant = activeChestGame.Participants[turn.ParticipantID]
                 if currentParticipant then
-                    if activeChestGame.CurrentTurnParticipantID == activeParticipantID then
+                    if turn.ParticipantID == activeParticipantID then
                         objective = "YOUR TURN"
                     else
                         -- Get player name from participant ID

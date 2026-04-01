@@ -1,5 +1,5 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 
 return nil

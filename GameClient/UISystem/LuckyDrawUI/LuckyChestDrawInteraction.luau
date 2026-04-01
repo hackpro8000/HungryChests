@@ -4,7 +4,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local LuckyDrawNetworker = require(ReplicatedStorage.GameClient.LuckyDrawSystem.LuckyDrawNetworker)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 local LuckyChestDrawViewer = require(script.Parent.LuckyChestDrawViewer)
 local ProductIDMap = require(ReplicatedStorage.GameDefinitions.MarketplaceSystem.ProductIDMap)
 
@@ -16,6 +16,8 @@ LuckyChestDrawViewer.InteractionContext:GetButton("CommonDraw1"):ListenLMB(funct
     end
 
     LuckyDrawNetworker.requestLuckyDraw("LuckyChestDraw", "Common", 1)
+
+    task.wait(2)
 end)
 
 LuckyChestDrawViewer.InteractionContext:GetButton("CommonDraw5"):ListenLMB(function(isDown : boolean)
@@ -24,6 +26,8 @@ LuckyChestDrawViewer.InteractionContext:GetButton("CommonDraw5"):ListenLMB(funct
     end
 
     LuckyDrawNetworker.requestLuckyDraw("LuckyChestDraw", "Common", 5)
+
+    task.wait(2)
 end)
 
 LuckyChestDrawViewer.InteractionContext:GetButton("PremiumDraw1"):ListenLMB(function(isDown : boolean)

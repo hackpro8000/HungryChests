@@ -3,20 +3,22 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local ToastNotificationSender = require(ServerScriptService.GameServer.ToastNotificationSystem.ToastNotificationSender)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local LuckyDrawEvents = require(ReplicatedStorage.GameCommons.LuckyDrawSystem.LuckyDrawEvents)
-local LuckyDrawHelper = require(ReplicatedStorage.GameCommons.LuckyDrawSystem.LuckyDrawHelper)
-local LuckyDrawState = require(ReplicatedStorage.GameCommons.LuckyDrawSystem.LuckyDrawState)
-local LuckyDrawTypes = require(ReplicatedStorage.GameCommons.LuckyDrawSystem.LuckyDrawTypes)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
-local ProfileSystemTypes = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileSystemTypes)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local LuckyDrawEvents = require(ReplicatedStorage.GameCommon.LuckyDrawSystem.LuckyDrawEvents)
+local LuckyDrawHelper = require(ReplicatedStorage.GameCommon.LuckyDrawSystem.LuckyDrawHelper)
+local LuckyDrawState = require(ReplicatedStorage.GameCommon.LuckyDrawSystem.LuckyDrawState)
+local LuckyDrawTypes = require(ReplicatedStorage.GameCommon.LuckyDrawSystem.LuckyDrawTypes)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
+local ProfileSystemTypes = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileSystemTypes)
 local LuckyChairDrawPool = require(ReplicatedStorage.GameDefinitions.LuckyDrawSystem.LuckyChairDraw.LuckyChairDrawPool)
 local LuckyChairCommonTier = require(ReplicatedStorage.GameDefinitions.LuckyDrawSystem.LuckyChairDraw.LuckyChairCommonTier)
+local LuckyChairDrawPrefabs = require(ReplicatedStorage.GameDefinitions.LuckyDrawSystem.LuckyChairDraw.LuckyChairDrawPrefabs)
 local LuckyChairPremiumTier = require(ReplicatedStorage.GameDefinitions.LuckyDrawSystem.LuckyChairDraw.LuckyChairPremiumTier)
 
 local LUCKY_DRAW_ID = "LuckyChairDraw"
 local BASE_DRAW_COST = 500
 local DRAW_5_COST = 2200
+local DUPLICATE_COMPENSATION = 200
 
 LuckyDrawEvents.LuckyDrawRequested:Connect(function(luckyDrawRequest: LuckyDrawTypes.LuckyDrawRequest)
     if luckyDrawRequest:GetLuckyDrawID() ~= LUCKY_DRAW_ID then
@@ -59,7 +61,7 @@ LuckyDrawEvents.LuckyDrawRequested:Connect(function(luckyDrawRequest: LuckyDrawT
     --[[
         Ensure player has enough coins
     ]]
-    if profile.Currencies.Primary < drawCost then
+    if profile.Currencies.Primary < drawCost and not luckyDrawRequest:IsIAP() then
         luckyDrawRequest:Deny("InsufficientCurrency.Primary")
 
         return
@@ -73,11 +75,20 @@ LuckyDrawEvents.LuckyDrawRequested:Connect(function(luckyDrawRequest: LuckyDrawT
             Award the prizes.
         ]]        
         for _, prizeID in prizeIDs do
+            --[[
+                Handle duplicates
+            ]]
+            if profile.ChairInventory[prizeID] then
+                ProfileState:GetServer().giveCurrency(userIDString, "Primary", DUPLICATE_COMPENSATION)
+                
+                continue
+            end
+
             print(`Received prize ID: {prizeID}!`)
             ProfileState:GetServer().ownChair(userIDString, prizeID)
         end
 
-        ToastNotificationSender.sendNotification(Players:GetPlayerByUserId(tonumber(userIDString)), `Received: {table.concat(prizeIDs, ", ")}`, 5)
+        -- ToastNotificationSender.sendNotification(Players:GetPlayerByUserId(tonumber(userIDString)), `Received: {table.concat(prizeIDs, ", ")}`, 5)
 
         --[[
             If not an IAP, take currency from the profile.
@@ -101,6 +112,9 @@ BootEvents.NetworkStarted:Connect(function()
 
     -- ADD POOLS BELOW HERE
     LuckyDrawState:GetServer().addPool(LUCKY_DRAW_ID, "Default", LuckyChairDrawPool)
+
+    -- SET PREFABS BELOW HERE
+    LuckyDrawState:GetServer().setPrefabs(LUCKY_DRAW_ID, LuckyChairDrawPrefabs)
 
     -- ADD TIERS BELOW HERE
     LuckyDrawState:GetServer().addTier(LUCKY_DRAW_ID, "Common", LuckyChairCommonTier)

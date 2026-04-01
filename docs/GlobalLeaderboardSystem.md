@@ -166,10 +166,10 @@ local LEADERBOARD_ID = "YourLeaderboard"
 local DataStoreService = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local GlobalLeaderboardEvents = require(ReplicatedStorage.GameCommons.GlobalLeaderboardSystem.GlobalLeaderboardEvents)
-local GlobalLeaderboardState = require(ReplicatedStorage.GameCommons.GlobalLeaderboardSystem.GlobalLeaderboardState)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local GlobalLeaderboardEvents = require(ReplicatedStorage.GameCommon.GlobalLeaderboardSystem.GlobalLeaderboardEvents)
+local GlobalLeaderboardState = require(ReplicatedStorage.GameCommon.GlobalLeaderboardSystem.GlobalLeaderboardState)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 
 local OrderedDataStore = DataStoreService:GetOrderedDataStore(LEADERBOARD_ID)
 

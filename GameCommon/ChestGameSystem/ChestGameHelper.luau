@@ -1,11 +1,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local StreamingLib = require(ReplicatedStorage.TLib.StreamingLib)
 local ChestGameDataTypes = require(script.Parent.ChestGameDataTypes)
 local ChestGameState = require(script.Parent.ChestGameState)
 
-local ChestGameHelper = {}
+local Helper = {}
 
-function ChestGameHelper.getPlayerChestGame(player : Player) : (string, ChestGameDataTypes.ChestGame, string)
+function Helper.getPlayerChestGame(player : Player) : (string, ChestGameDataTypes.ChestGame, string)
     assert(player, "Player was not provided!")
     assert(typeof(player) == "Instance" and player:IsA("Player"), "Parameter must be a Player instance!")
     
@@ -22,7 +23,31 @@ function ChestGameHelper.getPlayerChestGame(player : Player) : (string, ChestGam
     return nil, nil, nil
 end
 
-function ChestGameHelper.countParticipants(chestGame: ChestGameDataTypes.ChestGame): number
+function Helper.requireChestGame(chestGameID : string)
+    assert(chestGameID, "Chest game ID was not provided!")
+
+    return assert(
+        ChestGameState.Data.ChestGameCollection[chestGameID], 
+        `Couldn't find chest game {chestGameID}`
+    )
+end
+
+function Helper.requireParticipant(chestGameID : string, participantID : string) : ChestGameDataTypes.ChestGameParticipant
+    assert(participantID, `Participant ID was not provided!`)
+    
+    return assert(
+        Helper.requireChestGame(chestGameID).Participants[participantID], 
+        `Couldn't find participant {participantID} in chest game {chestGameID}`
+    )
+end
+
+function Helper.participantHasEffect(chestGameID : string, participantID : string, effectID : string) : boolean
+    local participant : ChestGameDataTypes.ChestGameParticipant? = Helper.requireParticipant(chestGameID, participantID)
+
+    return participant.Effects[effectID] == true
+end
+
+function Helper.countParticipants(chestGame: ChestGameDataTypes.ChestGame): number
     assert(chestGame, "Chest game was not provided!")
     assert(chestGame.Participants, "Chest game participants table was not provided!")
     
@@ -33,7 +58,7 @@ function ChestGameHelper.countParticipants(chestGame: ChestGameDataTypes.ChestGa
     return count
 end
 
-function ChestGameHelper.countParticipantsByID(chestGameID: string): number
+function Helper.countParticipantsByID(chestGameID: string): number
     assert(chestGameID, "Chest game ID was not provided!")
     
     local chestGame: ChestGameDataTypes.ChestGame = assert(
@@ -41,10 +66,10 @@ function ChestGameHelper.countParticipantsByID(chestGameID: string): number
         `Chest game {chestGameID} not found!`
     )
     
-    return ChestGameHelper.countParticipants(chestGame)
+    return Helper.countParticipants(chestGame)
 end
 
-function ChestGameHelper.getParticipantByIndex(chestGameID: string, index: number): (string?, ChestGameDataTypes.ChestGameParticipant?)
+function Helper.getParticipantByIndex(chestGameID: string, index: number): (string?, ChestGameDataTypes.ChestGameParticipant?)
     assert(chestGameID, "Chest game ID was not provided!")
     assert(index, "Index was not provided!")
     assert(typeof(index) == "number", "Index must be a number!")
@@ -63,7 +88,28 @@ function ChestGameHelper.getParticipantByIndex(chestGameID: string, index: numbe
     return nil
 end
 
-function ChestGameHelper.getAvailableChests(chestGameID: string): {number}
+function Helper.getSeatPositionPartFromParticipant(chestGameID : string, participantID : string) : Part?
+    assert(chestGameID, "Chest game ID was not provided!")
+    assert(participantID, "Participant ID was not provided!")
+
+    local chestGame : ChestGameDataTypes.ChestGame = assert(ChestGameState.Data.ChestGameCollection[chestGameID], `Chest Game (ID: {chestGameID}) not found`)
+    local participant : ChestGameDataTypes.ChestGameParticipant = assert(chestGame.Participants[participantID], `Participant (ID : {participantID}) not found in Chest Game (ID : {chestGameID})`)
+
+    local chestGameInstance = StreamingLib.getInstance(chestGame.InstanceStreamableID)
+
+    local seatPositionsFolder : Folder = chestGameInstance.SeatPositions
+    local seatPosition : Part? = nil
+
+    for _, seatPosition1 : Part in seatPositionsFolder:GetChildren() do
+        if seatPosition1:GetAttribute("ParticipantIndex") == participant.Index then
+            seatPosition = seatPosition1
+        end
+    end
+
+    return seatPosition
+end
+
+function Helper.getAvailableChests(chestGameID: string): {number}
     assert(chestGameID, "Chest game ID was not provided!")
     
     local chestGame: ChestGameDataTypes.ChestGame = assert(
@@ -92,7 +138,7 @@ function ChestGameHelper.getAvailableChests(chestGameID: string): {number}
     return availableChests
 end
 
-function ChestGameHelper.isChestOpened(chestGameID: string, chestNum: number): boolean
+function Helper.isChestOpened(chestGameID: string, chestNum: number): boolean
     assert(chestGameID, "Chest game ID was not provided!")
     assert(chestNum, "Chest number was not provided!")
     
@@ -104,7 +150,60 @@ function ChestGameHelper.isChestOpened(chestGameID: string, chestNum: number): b
     return table.find(chestGame.OpenedChests or {}, chestNum) ~= nil
 end
 
-function ChestGameHelper.getActiveParticipants(chestGameID: string): {string}
+function Helper.getParticipantIDs(chestGameID : string) : {string}
+    assert(chestGameID, "Chest game ID was not provided!")
+    
+    local participantIDs = {} :: {string}
+    local chestGame: ChestGameDataTypes.ChestGame = assert(
+        ChestGameState.Data.ChestGameCollection[chestGameID],
+        `Chest game {chestGameID} not found!`
+    )
+
+    for participantID : string in chestGame.Participants do
+        table.insert(participantIDs, participantID)
+    end
+
+    return participantIDs
+end
+
+function Helper.getIndexSortedParticipantIDs(chestGameID : string)
+    assert(chestGameID, "Chest game ID was not provided!")
+
+    return Helper.sortParticipantIDsByIndex(
+        chestGameID,
+        Helper.getParticipantIDs(chestGameID)
+    )
+end
+
+function Helper.sortParticipantIDsByIndex(chestGameID : string, participantIDsToSort : {string}) : {string}
+    local participantIDs = {} :: {string}
+    local participantIDsByIndex = {} :: {[number] : string}
+
+    local chestGame: ChestGameDataTypes.ChestGame = assert(
+        ChestGameState.Data.ChestGameCollection[chestGameID],
+        `Chest game {chestGameID} not found!`
+    )
+
+    --[[
+        This loop sorts the participant IDs by index
+    ]]
+    for _, participantID in participantIDsToSort do
+        local participant: ChestGameDataTypes.ChestGameParticipant = chestGame.Participants[participantID]
+
+        participantIDsByIndex[participant.Index] = participantID
+    end
+
+    --[[
+        This loop eliminates gaps
+    ]]
+    for i, participantID in participantIDsByIndex do
+        table.insert(participantIDs, participantID)
+    end
+
+    return participantIDs
+end
+
+function Helper.getLivingParticipants(chestGameID: string): {[string]: ChestGameDataTypes.ChestGameParticipant}
     assert(chestGameID, "Chest game ID was not provided!")
     
     local chestGame: ChestGameDataTypes.ChestGame = assert(
@@ -112,25 +211,37 @@ function ChestGameHelper.getActiveParticipants(chestGameID: string): {string}
         `Chest game {chestGameID} not found!`
     )
     
-    local activeParticipants: {string} = {}
+    local aliveParticipants: {string} = {}
     
     for participantID: string, participant: ChestGameDataTypes.ChestGameParticipant in chestGame.Participants do
         if participant.HealthPoints > 0 then
-            table.insert(activeParticipants, participantID)
+            aliveParticipants[participantID] = participant
         end
     end
-    
-    table.sort(activeParticipants, function(participantID0, participantID1)
-        local participant0 = chestGame.Participants[participantID0]
-        local participant1 = chestGame.Participants[participantID1]
 
-        return participant0.Index < participant1.Index
-    end)
-
-    return activeParticipants
+    return aliveParticipants
 end
 
-function ChestGameHelper.isChestOwnedByParticipant(chestGameID : string, chestNum : number, participantID : string) : boolean
+function Helper.getLivingParticipantIDs(chestGameID: string): {string}
+    assert(chestGameID, "Chest game ID was not provided!")
+    
+    local chestGame: ChestGameDataTypes.ChestGame = assert(
+        ChestGameState.Data.ChestGameCollection[chestGameID],
+        `Chest game {chestGameID} not found!`
+    )
+    
+    local aliveParticipantIDs: {string} = {}
+    
+    for participantID: string, participant: ChestGameDataTypes.ChestGameParticipant in chestGame.Participants do
+        if participant.HealthPoints > 0 then
+            table.insert(aliveParticipantIDs, participantID)
+        end
+    end
+
+    return aliveParticipantIDs
+end
+
+function Helper.isChestOwnedByParticipant(chestGameID : string, chestNum : number, participantID : string) : boolean
     assert(chestGameID, "Chest game ID was not provided!")
     assert(chestNum, "Chest number was not provided!")
     assert(participantID, "Participant ID was not provided")
@@ -153,7 +264,7 @@ function ChestGameHelper.isChestOwnedByParticipant(chestGameID : string, chestNu
     return false
 end
 
-function ChestGameHelper.isBadChest(chestGameID: string, chestNum: number, excludeParticipantID: string?): boolean
+function Helper.isBadChest(chestGameID: string, chestNum: number, excludeParticipantID: string?): boolean
     assert(chestGameID, "Chest game ID was not provided!")
     assert(chestNum, "Chest number was not provided!")
     
@@ -176,13 +287,12 @@ function ChestGameHelper.isBadChest(chestGameID: string, chestNum: number, exclu
     return false
 end
 
--- Grid helper functions
-function ChestGameHelper.getTotalChests(chestGame: ChestGameDataTypes.ChestGame): number
+function Helper.getTotalChests(chestGame: ChestGameDataTypes.ChestGame): number
     assert(chestGame, "Chest game was not provided!")
     return chestGame.GridSizeX * chestGame.GridSizeY
 end
 
-function ChestGameHelper.getChestGridPosition(chestGame: ChestGameDataTypes.ChestGame, chestNum: number): (number, number)
+function Helper.getChestGridXY(chestGame: ChestGameDataTypes.ChestGame, chestNum: number): (number, number)
     assert(chestGame, "Chest game was not provided!")
     assert(chestNum, "Chest number was not provided!")
     assert(typeof(chestNum) == "number", "Chest number must be a number!")
@@ -192,16 +302,21 @@ function ChestGameHelper.getChestGridPosition(chestGame: ChestGameDataTypes.Ches
     return gridX, gridY
 end
 
-function ChestGameHelper.isValidchestNum(chestGame: ChestGameDataTypes.ChestGame, chestNum: number): boolean
+function Helper.getChestGridPosition(chestGame : ChestGameDataTypes.ChestGame, chestNum : number): Vector3
+    local x, y = Helper.getChestGridXY(chestGame, chestNum)
+
+    return Vector3.new(x,0,y)
+end
+
+function Helper.isValidchestNum(chestGame: ChestGameDataTypes.ChestGame, chestNum: number): boolean
     assert(chestGame, "Chest game was not provided!")
     assert(chestNum, "Chest number was not provided!")
     assert(typeof(chestNum) == "number", "Chest number must be a number!")
     
-    return chestNum >= 1 and chestNum <= ChestGameHelper.getTotalChests(chestGame)
+    return chestNum >= 1 and chestNum <= Helper.getTotalChests(chestGame)
 end
 
--- Consolidated duplicate functions from other modules
-function ChestGameHelper.getUnopenedChests(chestGameID: string): {number}
+function Helper.getUnopenedChests(chestGameID: string): {number}
     assert(chestGameID, "Chest game ID was not provided!")
     
     local chestGame: ChestGameDataTypes.ChestGame = assert(
@@ -222,19 +337,19 @@ function ChestGameHelper.getUnopenedChests(chestGameID: string): {number}
     return unopenedChests
 end
 
-function ChestGameHelper.getRandomUnopenedChest(chestGameID: string, excludeParticipantID: string?): number?
+function Helper.getRandomUnopenedChest(chestGameID: string, excludeParticipantID: string?): number?
     assert(chestGameID, "Chest game ID was not provided!")
     
-    local chestGame: ChestGameDataTypes.ChestGame = assert(
+    local _chestGame: ChestGameDataTypes.ChestGame = assert(
         ChestGameState.Data.ChestGameCollection[chestGameID],
         `Chest game {chestGameID} not found!`
     )
     
-    local unopenedChests = ChestGameHelper.getUnopenedChests(chestGameID)
+    local unopenedChests = Helper.getUnopenedChests(chestGameID)
     local validChests: {number} = {}
     
     for _, chestNum in unopenedChests do
-        if excludeParticipantID and ChestGameHelper.isChestOwnedByParticipant(chestGameID, chestNum, excludeParticipantID) then
+        if excludeParticipantID and Helper.isChestOwnedByParticipant(chestGameID, chestNum, excludeParticipantID) then
             continue
         end
 
@@ -248,29 +363,12 @@ function ChestGameHelper.getRandomUnopenedChest(chestGameID: string, excludePart
     return validChests[math.random(#validChests)]
 end
 
-function ChestGameHelper.getNextAliveParticipant(chestGameID: string, currentParticipantID: string): string?
-    assert(chestGameID, "Chest game ID was not provided!")
-    assert(currentParticipantID, "Current participant ID was not provided!")
+function Helper.isAnimationActive(chestGame: ChestGameDataTypes.ChestGame, currentTime: number): boolean
+    assert(chestGame, "Chest game was not provided!")
+    assert(currentTime, "Current time was not provided!")
+    assert(typeof(currentTime) == "number", "Current time must be a number!")
     
-    local chestGame: ChestGameDataTypes.ChestGame = assert(
-        ChestGameState.Data.ChestGameCollection[chestGameID],
-        `Chest game {chestGameID} not found!`
-    )
-    
-    local currentParticipant = chestGame.Participants[currentParticipantID]
-    assert(currentParticipant, `Current participant {currentParticipantID} not found in chest game {chestGameID}!`)
-    
-    local activeParticipants = ChestGameHelper.getActiveParticipants(chestGameID)
-    if #activeParticipants <= 1 then
-        return nil
-    end
-    
-    -- Find current participant in active list
-    local currentIndex = currentParticipant.Index
-    
-    -- Get next participant (wrap around)
-    local nextIndex = (((currentIndex+1)-1) % #activeParticipants) + 1
-    return activeParticipants[nextIndex] or activeParticipants[math.random(1, #activeParticipants)]
+    return chestGame.AnimationEnds ~= nil and currentTime < chestGame.AnimationEnds
 end
 
-return ChestGameHelper
+return Helper

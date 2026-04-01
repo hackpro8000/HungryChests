@@ -1,13 +1,13 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
-local ChestGameHelper = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameHelper)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local ChestGameDataTypes = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameDataTypes)
+local ChestGameHelper = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameHelper)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 local StreamingLibClient = require(ReplicatedStorage.TLib.StreamingLib.StreamingLibClient)
 
 local LocalPlayer = Players.LocalPlayer
-local ChestPrefabs = ReplicatedStorage.Resources.Prefabs.Chests
+local ChestPrefabs = ReplicatedStorage.Resources.Prefabs.RegularChests
 local ChairPrefabs = ReplicatedStorage.Resources.Prefabs.Chairs
 local ChestChosenIndicator = ReplicatedStorage.Resources.Prefabs.VFX.ChestChosenIndicator
 local ChestAllowIndicator = ReplicatedStorage.Resources.Prefabs.VFX.ChestAllowIndicator
@@ -70,7 +70,7 @@ function IChestGameRenderer.updateCurrentChestRendering(chestGameID : string, ac
         local clickDetector = chestRenderModel:FindFirstChild("ClickDetector")
 
         local isChestOpened = table.find(chestGame.OpenedChests or {}, chestNum) ~= nil
-        local isMyTurn = activeParticipant and chestGame.CurrentTurnParticipantID == activeParticipantID
+        local isMyTurn = activeParticipant and chestGame.CurrentTurn and chestGame.CurrentTurn.ParticipantID == activeParticipantID
 
         -- Handle ChoosingChests state
         if chestGame.State == "ChoosingChests" then
@@ -167,7 +167,7 @@ function IChestGameRenderer.renderGridChests(chestGameID : string, activePartici
 
     local totalChests = ChestGameHelper.getTotalChests(chestGame)
     for chestNum : number = 1, totalChests do
-        local gridX : number, gridY : number = ChestGameHelper.getChestGridPosition(chestGame, chestNum)
+        local gridX : number, gridY : number = ChestGameHelper.getChestGridXY(chestGame, chestNum)
         local participantIndex : number = ((chestNum-1) % participantCount) + 1
         local _, participant : ChestGameDataTypes.ChestGameParticipant? = ChestGameHelper.getParticipantByIndex(chestGameID, participantIndex)
         

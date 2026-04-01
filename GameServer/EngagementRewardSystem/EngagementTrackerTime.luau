@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local EngagementRewardState = require(ReplicatedStorage.GameCommons.EngagementRewardSystem.EngagementRewardState)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local EngagementRewardState = require(ReplicatedStorage.GameCommon.EngagementRewardSystem.EngagementRewardState)
 
 local function doTimeTracking()
     while true do

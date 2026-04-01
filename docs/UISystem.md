@@ -18,7 +18,7 @@ MyViewer:AutoParent()
 
 ### 2. Reactive Data Binding
 ```lua
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 
 ProfileState.addProfile.listen(function(profileID: string)
     updateUI() -- React to profile creation
@@ -274,8 +274,8 @@ end)
 ```lua
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 local UILib = require(ReplicatedStorage.TLib.UILib)
 
 local CustomStatsViewer = UILib.Viewer()

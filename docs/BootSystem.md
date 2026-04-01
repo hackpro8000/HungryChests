@@ -106,7 +106,7 @@ BootEvents.NetworkStarted  -- Fired when network initialization completes (defer
 #### Usage Example
 ```lua
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 
 BootEvents.SystemStarted:Connect(function()
     print("All systems initialized")
@@ -137,7 +137,7 @@ Load(moduleScript: ModuleScript, failureFn?: (ModuleScript, string) -> (), warnF
 
 #### Usage Example
 ```lua
-local Load = require(ReplicatedStorage.GameCommons.BootSystem.Load)
+local Load = require(ReplicatedStorage.GameCommon.BootSystem.Load)
 
 local function customErrorHandler(moduleScript, errorMessage)
     warn(`Custom error handler: {moduleScript.Name} failed: {errorMessage}`)
@@ -165,7 +165,7 @@ LoadChildren(parent: Instance, failureFn?: (ModuleScript, string) -> (), warnFn?
 
 #### Usage Example
 ```lua
-local LoadChildren = require(ReplicatedStorage.GameCommons.BootSystem.LoadChildren)
+local LoadChildren = require(ReplicatedStorage.GameCommon.BootSystem.LoadChildren)
 
 LoadChildren(game.ServerScriptService.MySystem)
 ```
@@ -184,7 +184,7 @@ LoadErrHandler(childModule: ModuleScript, errorMessage: string)
 
 #### Usage Example
 ```lua
-local LoadErrHandler = require(ReplicatedStorage.GameCommons.BootSystem.LoadErrHandler)
+local LoadErrHandler = require(ReplicatedStorage.GameCommon.BootSystem.LoadErrHandler)
 
 -- Use as default handler
 Load(myModule, LoadErrHandler)
@@ -391,7 +391,7 @@ function MySystem.initialize()
 end
 
 -- Wait for network before using DataLib.Networking
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 BootEvents.NetworkStarted:Connect(MySystem.initialize)
 
 return MySystem
@@ -402,7 +402,7 @@ return MySystem
 ```lua
 -- GameClient/MyComplexSystem/#SYSTEMSTARTUP.luau
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 
 local System = {}
 
@@ -428,7 +428,7 @@ return System
 ```lua
 -- GameServer/CriticalSystem/CriticalModule.luau
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Load = require(ReplicatedStorage.GameCommons.BootSystem.Load)
+local Load = require(ReplicatedStorage.GameCommon.BootSystem.Load)
 
 local function criticalErrorHandler(moduleScript, errorMessage)
     -- Critical system failure handling
@@ -458,7 +458,7 @@ return CriticalModule
 -- GameServer/NetworkSystem/NetworkModule.luau
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataLib = require(ReplicatedStorage.TLib.DataLib)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 
 local NetworkSystem = {}
 
@@ -496,7 +496,7 @@ return NetworkSystem
 -- GameClient/UISystem/UIManager.luau
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 
 local UIManager = {}
 
@@ -536,7 +536,7 @@ return UIManager
 
 ```lua
 -- Debug: Check if boot events fire
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 BootEvents.SystemStarted:Connect(function()
     print("Boot system completed successfully")
 end)
@@ -551,7 +551,7 @@ end)
 
 ```lua
 -- Debug: Check network status
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 BootEvents.NetworkStarted:Connect(function()
     print("Network is ready")
     -- Safe to use DataLib.Networking here
@@ -567,7 +567,7 @@ end)
 
 ```lua
 -- Add custom error handling for debugging
-local Load = require(ReplicatedStorage.GameCommons.BootSystem.Load)
+local Load = require(ReplicatedStorage.GameCommon.BootSystem.Load)
 local function debugErrorHandler(module, error)
     warn(`Client module ${module:GetFullName()} failed: ${error}`)
 end
@@ -617,7 +617,7 @@ end)
 #### Boot Event Monitoring
 ```lua
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 
 -- Monitor all boot events
 local events = {"SystemStarting", "SystemStarted", "NetworkStarting", "NetworkStarted"}
@@ -631,7 +631,7 @@ end
 
 #### Module Loading Diagnostics
 ```lua
-local Load = require(ReplicatedStorage.GameCommons.BootSystem.Load)
+local Load = require(ReplicatedStorage.GameCommon.BootSystem.Load)
 
 local function diagnosticErrorHandler(moduleScript, errorMessage)
     warn(`=== MODULE LOAD FAILURE ===`)

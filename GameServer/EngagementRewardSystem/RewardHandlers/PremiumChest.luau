@@ -2,10 +2,10 @@ local REWARD_ID = "PremiumChest"
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local EngagementRewardEvents = require(ReplicatedStorage.GameCommons.EngagementRewardSystem.EngagementRewardEvents)
-local EngagementRewardTypes = require(ReplicatedStorage.GameCommons.EngagementRewardSystem.EngagementRewardTypes)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
-local ProfileSystemTypes = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileSystemTypes)
+local EngagementRewardEvents = require(ReplicatedStorage.GameCommon.EngagementRewardSystem.EngagementRewardEvents)
+local EngagementRewardTypes = require(ReplicatedStorage.GameCommon.EngagementRewardSystem.EngagementRewardTypes)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
+local ProfileSystemTypes = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileSystemTypes)
 
 EngagementRewardEvents.OnProcessReward:Connect(function(rewardProcessRequest : EngagementRewardTypes.RewardProcessRequest)
     local rewardID : string = rewardProcessRequest:ParseReward("string:1")

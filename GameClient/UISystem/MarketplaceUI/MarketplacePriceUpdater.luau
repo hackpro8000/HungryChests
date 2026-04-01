@@ -3,7 +3,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local MarketplaceViewer = require(script.Parent.MarketplaceViewer)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 local GamepassIDMap = require(ReplicatedStorage.GameDefinitions.MarketplaceSystem.GamepassIDMap)
 local ProductIDMap = require(ReplicatedStorage.GameDefinitions.MarketplaceSystem.ProductIDMap)
 

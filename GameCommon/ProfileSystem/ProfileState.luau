@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local EngagementRewardTypes = require(ReplicatedStorage.GameCommons.EngagementRewardSystem.EngagementRewardTypes)
-local DailyRewardTypes = require(ReplicatedStorage.GameCommons.DailyRewardSystem.DailyRewardTypes)
+local EngagementRewardTypes = require(ReplicatedStorage.GameCommon.EngagementRewardSystem.EngagementRewardTypes)
+local DailyRewardTypes = require(ReplicatedStorage.GameCommon.DailyRewardSystem.DailyRewardTypes)
 local ProfileSystemTypes = require(script.Parent.ProfileSystemTypes)
 local DataLib = require(ReplicatedStorage.TLib.DataLib)
 
@@ -12,7 +12,7 @@ local Actions, Data = {}, {
 Actions.addProfile = DataLib.Action(function(profileID : string, profile : ProfileSystemTypes.Profile)
     assert(profileID, "Profile ID not provided!")
     assert(profile, `Profile data not provided for profile ID : {profileID}!`)
-
+    
     Data.Profiles[profileID] = profile
 end)
 
@@ -21,6 +21,14 @@ Actions.removeProfile = DataLib.Action(function(profileID : string)
     assert(Data.Profiles[profileID], `Could not find and remove profile {profileID}!`)
 
     Data.Profiles[profileID] = nil
+end)
+
+Actions.donateRobux = DataLib.Action(function(profileID : string, amount : number)
+    assert(profileID, "Profile ID not provided!")
+
+    local profile = assert(Data.Profiles[profileID], `Could not find profile with ID: {profileID}`)
+    
+    profile.RobuxDonated += amount
 end)
 
 Actions.incrementCurrency = DataLib.Action(function(profileID : string, currencyName : string, amount : number)
@@ -74,6 +82,25 @@ Actions.incrementShallowValue = DataLib.Action(function(profileID : string, key 
     assert(typeof(currentValue) == "number", `Current value for key {key} must be number, got {typeof(currentValue)}`)
     
     Actions.setShallowValue(profileID, key, currentValue + amount)
+end)
+
+Actions.friendJoined = DataLib.Action(function(profileID : string, friendUserIDString : string, timestamp : number)
+    assert(profileID, "Parameter `profileID` cannot be nil!")
+    assert(friendUserIDString, "Parameter `friendUserIDString` cannot be nil!")
+
+    local profile = Data.Profiles[profileID]
+    assert(profile, `Could not find profile with ID: {profileID}`)
+
+    profile.FriendJoinDates[friendUserIDString] = timestamp
+end)
+
+Actions.claimGroupReward = DataLib.Action(function(profileID : string, timestamp : number)
+    assert(profileID, "Parameter `profileID` cannot be nil!")
+
+    local profile = Data.Profiles[profileID]
+    assert(profile, `Could not find profile with ID: {profileID}`)
+
+    profile.GroupRewardClaimedOn = timestamp
 end)
 
 Actions.givePowerUp = DataLib.Action(function(profileID : string, powerUp : string, amount : number)

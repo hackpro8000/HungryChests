@@ -1,8 +1,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ChestGameDataTypes = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameDataTypes)
-local ChestGameHelper = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameHelper)
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local ChestGameDataTypes = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameDataTypes)
+local ChestGameHelper = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameHelper)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 local ChestGameServer = {}
 
 function ChestGameServer.chooseChestRegulated(chestGameID : string, participantID : string, chestNum : number)
@@ -48,6 +48,10 @@ function ChestGameServer.chooseChestRegulated(chestGameID : string, participantI
     end
 
     ChestGameState:GetServer().chooseChest(chestGameID, participantID, chestNum)
+end
+
+function ChestGameServer.openChestRegulated(chestGameID : string, participantID : string, chestNum : number)
+    
 end
 
 return ChestGameServer

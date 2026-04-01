@@ -496,8 +496,8 @@ end)
 
 ### Accessing Game State
 ```lua
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
-local ChestGameHelper = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameHelper)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
+local ChestGameHelper = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameHelper)
 
 -- Get player's current game
 local player = game.Players.LocalPlayer
@@ -565,7 +565,7 @@ end
 ```lua
 -- Note: There is no ChestGameHelper.setDebugMode function in this codebase.
 -- For debugging, inspect ChestGameState and ChestGameHelper internals instead.
-local ChestGameState = require(ReplicatedStorage.GameCommons.ChestGameSystem.ChestGameState)
+local ChestGameState = require(ReplicatedStorage.GameCommon.ChestGameSystem.ChestGameState)
 for id, game in pairs(ChestGameState.Data.ChestGameCollection) do
     print("Game", id, "State:", game.State, "Participants:", ChestGameHelper.countParticipants(game))
 end

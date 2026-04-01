@@ -1,10 +1,10 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local DailyRewardState = require(ReplicatedStorage.GameCommons.DailyRewardSystem.DailyRewardState)
-local DailyRewardTypes = require(ReplicatedStorage.GameCommons.DailyRewardSystem.DailyRewardTypes)
-local ProfileSystemTypes = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileSystemTypes)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local DailyRewardState = require(ReplicatedStorage.GameCommon.DailyRewardSystem.DailyRewardState)
+local DailyRewardTypes = require(ReplicatedStorage.GameCommon.DailyRewardSystem.DailyRewardTypes)
+local ProfileSystemTypes = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileSystemTypes)
 local DefaultDailyRewardMap = require(ReplicatedStorage.GameDefinitions.DailyRewardSystem.DailyRewardMaps.DefaultDailyRewardMap)
 
 local function createNewDailyTracker()

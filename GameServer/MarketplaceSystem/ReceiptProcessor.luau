@@ -1,6 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local MarketplaceTypes = require(ReplicatedStorage.GameCommons.MarketplaceSystem.MarketplaceTypes)
+local MarketplaceTypes = require(ReplicatedStorage.GameCommon.MarketplaceSystem.MarketplaceTypes)
 local ReceiptProcessor = {}
 ReceiptProcessor.__index = ReceiptProcessor
 

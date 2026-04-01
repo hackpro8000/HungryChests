@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local DailyRewardState = require(ReplicatedStorage.GameCommons.DailyRewardSystem.DailyRewardState)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local DailyRewardState = require(ReplicatedStorage.GameCommon.DailyRewardSystem.DailyRewardState)
 local DailyRewardGeneral = require(ReplicatedStorage.GameDefinitions.DailyRewardSystem.DailyRewardGeneral)
 local DefaultDailyRewardMap = require(ReplicatedStorage.GameDefinitions.DailyRewardSystem.DailyRewardMaps.DefaultDailyRewardMap)
 

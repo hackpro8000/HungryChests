@@ -360,7 +360,7 @@ The client-side DataLoading module is currently a placeholder for future UI inte
 
 ```lua
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 
 return nil
 ```
@@ -374,7 +374,7 @@ return nil
 ### Recommended Client Implementation
 ```lua
 -- Example client-side integration (not implemented)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 
 -- Listen for profile updates
 ProfileState.OnActionDone:Connect(function(actionName, ...)
@@ -462,7 +462,7 @@ end)
 
 ### Basic Currency Management
 ```lua
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 
 -- Give player reward for completing quest
 local function rewardPlayer(playerId, currencyAmount, trophyAmount)
@@ -589,7 +589,7 @@ end
 ### Debug Tools
 ```lua
 -- Inspect all loaded profiles
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 for playerId, profile in pairs(ProfileState.Data.Profiles) do
     print("Player:", playerId)
     print("  Wins:", profile.Wins)

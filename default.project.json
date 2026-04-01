@@ -11,8 +11,8 @@
             "Packages": {
                 "$path": "Packages"
             },
-            "GameCommons": {
-                "$path": "GameCommons"
+            "GameCommon": {
+                "$path": "GameCommon"
             },
             "GameDefinitions": {
                 "$path": "GameDefinitions"

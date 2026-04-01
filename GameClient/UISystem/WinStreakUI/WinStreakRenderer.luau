@@ -1,8 +1,8 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 local UILib = require(ReplicatedStorage.TLib.UILib)
 
 local winStreakViewers = {}

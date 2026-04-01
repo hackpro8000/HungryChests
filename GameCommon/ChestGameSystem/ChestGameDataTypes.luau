@@ -9,6 +9,7 @@ export type ChestGame = {
     TimerMin : number?,
     TimerMax : number?,
     CurrentTurnParticipantID : string?,
+    CurrentTurn : ChestGameTurn,
     OpenedChests : {number},
     DefaultChairType : string,
     AnimationEnds : number?,
@@ -21,11 +22,23 @@ export type ChestGame = {
     LoserTrophyRewardRange : NumberRange,
 }
 
+export type TurnDecision = {
+    ParticipantID : string,
+    ChestNum : number,
+    WasTimeoutDecision : boolean,
+}
+
+export type ChestGameTurn = {
+    ParticipantID : string,
+    Decision : TurnDecision?,
+}
+
 export type ChestGameParticipant = {
     UserIDString : string,
     HealthPoints : number,
     HealthPointsMax : number,
     ChosenChests : {number},
+    Effects : {[string] : boolean},
     ChestType : string,
     ChairType : string,
     Index : number,

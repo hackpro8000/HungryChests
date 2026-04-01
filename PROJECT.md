@@ -110,7 +110,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataLib = require(ReplicatedStorage.TLib.DataLib)
 
 -- Project imports (absolute paths from ReplicatedStorage)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 
 -- Relative imports for local modules
 local LocalModule = require(script.Parent.LocalModule)
@@ -296,9 +296,9 @@ Only non-script operations are permitted:
 The project uses a centralized boot system with `#SYSTEMSTARTUP` modules:
 
 ```lua
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local Load = require(ReplicatedStorage.GameCommons.BootSystem.Load)
-local LoadChildren = require(ReplicatedStorage.GameCommons.BootSystem.LoadChildren)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local Load = require(ReplicatedStorage.GameCommon.BootSystem.Load)
+local LoadChildren = require(ReplicatedStorage.GameCommon.BootSystem.LoadChildren)
 
 BootEvents.SystemStarting:Fire(); do
     for _, systemFolder in script.Parent.Parent:GetChildren() do

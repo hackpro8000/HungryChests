@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local EngagementRewardEvents = require(ReplicatedStorage.GameCommons.EngagementRewardSystem.EngagementRewardEvents)
-local EngagementRewardTypes = require(ReplicatedStorage.GameCommons.EngagementRewardSystem.EngagementRewardTypes)
+local EngagementRewardEvents = require(ReplicatedStorage.GameCommon.EngagementRewardSystem.EngagementRewardEvents)
+local EngagementRewardTypes = require(ReplicatedStorage.GameCommon.EngagementRewardSystem.EngagementRewardTypes)
 
 EngagementRewardEvents.OnProcessReward:Connect(function(rewardProcessRequest : EngagementRewardTypes.RewardProcessRequest)
     if rewardProcessRequest:IsPending() then

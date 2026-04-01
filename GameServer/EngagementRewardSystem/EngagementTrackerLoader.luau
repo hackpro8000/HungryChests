@@ -1,9 +1,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local EngagementRewardState = require(ReplicatedStorage.GameCommons.EngagementRewardSystem.EngagementRewardState)
-local ProfileSystemTypes = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileSystemTypes)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local EngagementRewardState = require(ReplicatedStorage.GameCommon.EngagementRewardSystem.EngagementRewardState)
+local ProfileSystemTypes = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileSystemTypes)
 local EngagementRewardGeneral = require(ReplicatedStorage.GameDefinitions.EngagementRewardSystem.EngagementRewardGeneral)
 local ExperimentalEngagementRewardMap = require(ReplicatedStorage.GameDefinitions.EngagementRewardSystem.EngagementRewardMaps.ExperimentalEngagementRewardMap)
 local TestEngagementRewardMap = require(ReplicatedStorage.GameDefinitions.EngagementRewardSystem.EngagementRewardMaps.TestEngagementRewardMap)

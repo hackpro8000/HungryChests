@@ -1,9 +1,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local MarketplaceEvents = require(ReplicatedStorage.GameCommons.MarketplaceSystem.MarketplaceEvents)
-local MarketplaceHelper = require(ReplicatedStorage.GameCommons.MarketplaceSystem.MarketplaceHelper)
-local MarketplaceTypes = require(ReplicatedStorage.GameCommons.MarketplaceSystem.MarketplaceTypes)
-local ProfileState = require(ReplicatedStorage.GameCommons.ProfileSystem.ProfileState)
+local MarketplaceEvents = require(ReplicatedStorage.GameCommon.MarketplaceSystem.MarketplaceEvents)
+local MarketplaceHelper = require(ReplicatedStorage.GameCommon.MarketplaceSystem.MarketplaceHelper)
+local MarketplaceTypes = require(ReplicatedStorage.GameCommon.MarketplaceSystem.MarketplaceTypes)
+local ProfileState = require(ReplicatedStorage.GameCommon.ProfileSystem.ProfileState)
 
 local COIN_QUANTITIES = {
     CoinBoost1 = 300,

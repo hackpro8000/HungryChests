@@ -10,10 +10,9 @@ local Actions, Data = {}, {
 Actions.addDailyTracker = DataLib.Action(function(dailyTrackerID : string, dailyTracker : DailyRewardTypes.DailyTracker)
     assert(dailyTrackerID, `Daily Tracker ID was not provided!`)
     assert(dailyTracker, `Daily Tracker data was not provided!`)
-    assert(dailyTracker.LastLoginDate, `Daily Tracker ${dailyTrackerID}, Last Login Date was not provided!`)
-    assert(dailyTracker.CurrentStreak, `Daily Tracker ${dailyTrackerID}, Current Streak was not provided!`)
-    assert(dailyTracker.DailyRewardIndex, `Daily Tracker ${dailyTrackerID}, Daily Reward Index was not provided!`)
-    assert(dailyTracker.DailyRewardMap, `Daily Tracker ${dailyTrackerID}, Daily Reward Map was not provided!`)
+    assert(dailyTracker.LastLoginDate, `Daily Tracker {dailyTrackerID}, Last Login Date was not provided!`)
+    assert(dailyTracker.CurrentStreak, `Daily Tracker {dailyTrackerID}, Current Streak was not provided!`)
+    assert(dailyTracker.DailyRewardMap, `Daily Tracker {dailyTrackerID}, Daily Reward Map was not provided!`)
     
     Data.DailyTrackers[dailyTrackerID] = dailyTracker
 end)

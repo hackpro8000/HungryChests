@@ -9,11 +9,20 @@ local Actions, Data = {}, {
 
 Actions.registerLuckyDraw = DataLib.Action(function(luckyDrawID : string)
     assert(luckyDrawID, "Lucky Draw ID not provided!")
-
+    
     Data.LuckyDraws[luckyDrawID] = {
         Tiers = {};
         Pools = {};
     }
+end)
+
+Actions.setPrefabs = DataLib.Action(function(luckyDrawID : string, prefabs : {[string] : Instance})
+    assert(luckyDrawID, "Lucky Draw ID not provided!")
+    assert(prefabs, "Prefabs not provided!")
+
+    local luckyDraw : LuckyDrawTypes.LuckyDraw = assert(Data.LuckyDraws[luckyDrawID], `Lucky Draw "{luckyDrawID}" isn't registered!`)
+
+    luckyDraw.Prefabs = prefabs
 end)
 
 Actions.addTier = DataLib.Action(function(luckyDrawID : string, tierID : string, tier : LuckyDrawTypes.LuckyDrawTier)

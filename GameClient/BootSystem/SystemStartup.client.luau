@@ -1,8 +1,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
-local Load = require(ReplicatedStorage.GameCommons.BootSystem.Load)
-local LoadChildren = require(ReplicatedStorage.GameCommons.BootSystem.LoadChildren)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
+local Load = require(ReplicatedStorage.GameCommon.BootSystem.Load)
+local LoadChildren = require(ReplicatedStorage.GameCommon.BootSystem.LoadChildren)
 local DataLib = require(ReplicatedStorage.TLib.DataLib)
 
 BootEvents.SystemStarting:Fire(); do

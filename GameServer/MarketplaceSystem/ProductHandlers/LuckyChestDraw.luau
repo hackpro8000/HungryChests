@@ -2,10 +2,10 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local LuckyDrawRequest = require(ServerScriptService.GameServer.LuckyDrawSystem.LuckyDrawRequest)
-local LuckyDrawEvents = require(ReplicatedStorage.GameCommons.LuckyDrawSystem.LuckyDrawEvents)
-local MarketplaceEvents = require(ReplicatedStorage.GameCommons.MarketplaceSystem.MarketplaceEvents)
-local MarketplaceTypes = require(ReplicatedStorage.GameCommons.MarketplaceSystem.MarketplaceTypes)
+local LuckyDrawRequest = require(ReplicatedStorage.GameCommon.LuckyDrawSystem.LuckyDrawRequest)
+local LuckyDrawEvents = require(ReplicatedStorage.GameCommon.LuckyDrawSystem.LuckyDrawEvents)
+local MarketplaceEvents = require(ReplicatedStorage.GameCommon.MarketplaceSystem.MarketplaceEvents)
+local MarketplaceTypes = require(ReplicatedStorage.GameCommon.MarketplaceSystem.MarketplaceTypes)
 local ProductIDMap = require(ReplicatedStorage.GameDefinitions.MarketplaceSystem.ProductIDMap)
 
 local Quantities = {

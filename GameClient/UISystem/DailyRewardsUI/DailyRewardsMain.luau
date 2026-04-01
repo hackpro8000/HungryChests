@@ -5,10 +5,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
 local DailyRewardsViewer = require(script.Parent.DailyRewardsViewer)
-local BootEvents = require(ReplicatedStorage.GameCommons.BootSystem.BootEvents)
+local BootEvents = require(ReplicatedStorage.GameCommon.BootSystem.BootEvents)
 local NetLibClient = require(ReplicatedStorage.TLib.NetLib.NetLibClient)
-local DailyRewardState = require(ReplicatedStorage.GameCommons.DailyRewardSystem.DailyRewardState)
-local DailyRewardTypes = require(ReplicatedStorage.GameCommons.DailyRewardSystem.DailyRewardTypes)
+local DailyRewardState = require(ReplicatedStorage.GameCommon.DailyRewardSystem.DailyRewardState)
+local DailyRewardTypes = require(ReplicatedStorage.GameCommon.DailyRewardSystem.DailyRewardTypes)
 local UILib = require(ReplicatedStorage.TLib.UILib)
 
 local RF_ClaimReward = NetLibClient.RemoteFunction("DailyRewardSystem/ClaimReward")
